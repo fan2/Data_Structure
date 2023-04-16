@@ -19,7 +19,7 @@
 
 三元局部排序后，pivot被移动到新的（索引）位置。以新的pivot索引作为支点，重复这种双向比较交换，直到将所有的小值都移动到pivot左边、所有的大值都移动到pivot右边，完成一趟分治：`[小值],pivot,[大值]`。
 
-### 算法流程
+### 算法流程1
 
 **初始条件**：
 
@@ -101,22 +101,22 @@ A={13, 38, 27, 49, 49, 76, 65, 97}
 
 1. 选定 pivot=A[3]=49，那么从右往左第一个小值=A[2]=27，从左往右第一个大值是A[5]=76。左边最后一个小值已经在pivot左边，右边第一个大值已经在pivot右边，意味着整体相对基准已经有序，本轮分治完成。
 
-![](https://note.youdao.com/yws/res/95711/WEBRESOURCE7ef7282d0250e3f2419a1a08d7f668d6)
+![Cocktail-1](../../images/quickSort/Cocktail-1.png)
 
-2. 特殊地，选定 pivot=A[0]=13，那么从右往左未找到小值，right=low；从左往右第一个即是大值 A[1]=38。左边没有小值（pivot最小），右边第一个大值已经在pivot右边，意味着整体相对基准已经有序，本轮分治完成。
+1. 特殊地，选定 pivot=A[0]=13，那么从右往左未找到小值，right=low；从左往右第一个即是大值 A[1]=38。左边没有小值（pivot最小），右边第一个大值已经在pivot右边，意味着整体相对基准已经有序，本轮分治完成。
 
-![](https://note.youdao.com/yws/res/95713/WEBRESOURCE57ecdf8efcb22d89f7458372c94d4f78)
+![Cocktail-2](../../images/quickSort/Cocktail-2.png)
 
 3. 特殊地，选定 pivot=A[7]=97，那么从右往左第一个即是小值，A[6]=65；从左往右未找到大值，left=high。右边没有大值（pivot最大），左边第一个小值已经在pivot左边，意味着整体相对基准已经有序，本轮分治完成。
 
-![](https://note.youdao.com/yws/res/95715/WEBRESOURCEd0c4ac46391f57eda07ab42c50539c53)
+![Cocktail-3](../../images/quickSort/Cocktail-3.png)
 
 #### 递归调用结束条件
 
 算法主体和 Lomuto 一致，仅仅是分区策略（partition）不同。
 因此，递归调用结束条件，同 Lomuto 分治策略保持一致。
 
-### 案例演绎
+#### 案例演绎
 
 **初始条件**：
 
@@ -145,7 +145,7 @@ A[8] = {49,38,65,97,76,13,27,49}
 
 通过以上两步交换，得到围绕pivot的有序三元组：A[0]<A[p=2]<A[6]（27<49<65）
 
-![三元交换](https://note.youdao.com/yws/res/95727/WEBRESOURCE4daceed8760ff6a3d59abddfd2669aec)
+![Cocktail-4](../../images/quickSort/Cocktail-4.png)
 
 重复1、2，得到围绕pivot的新有序三元组：A[2]<A[p=3]<A[5]（13<49<97）
 
@@ -153,11 +153,11 @@ A[8] = {49,38,65,97,76,13,27,49}
 ---|----|----|----|----|----|----|----
 27 | 38 | 13 | **49** | 76 | 97 | 65 | 49
 
-![三元交换](https://note.youdao.com/yws/res/95730/WEBRESOURCEfe9f827f01ed513aa2a0d1dfc8907d9a)
+![Cocktail-5](../../images/quickSort/Cocktail-5.png)
 
 重复1、2，得到 right=2，left=4，右指针cross左指针（right<left），本趟分割结束：`[27,38,13], 49, [76,97,65,49]`
 
-![cross](https://note.youdao.com/yws/res/95732/WEBRESOURCE30457f9d2cd0590414fdc4f1fe6721e8)
+![Cocktail-6-cross](../../images/quickSort/Cocktail-6.png)
 
 **二趟分割 1.left 流程演绎**：A[0:2]=[27,38,13]，pivot=A[0]=27
 
@@ -208,6 +208,73 @@ A[8] = {49,38,65,97,76,13,27,49}
 ---|----|----|----|----|----|----|----
 13 | 27 | 38 | **49** | 49 | 65 | 76 | 97
 
+### 算法流程2
+
+上述流程1是初学时，为了理解上的方便，曲解了教科书的原始步骤流程，每两次交换组成有序三元。
+在所有的小值、大值没有都分拣到左、右两边之前，pivot的位置一直是动态更新的。
+伴随着最后一次围绕pivot交换消除逆序，pivot位置即是终极位置。
+
+对于pivot=A[p]，如果满足 A[p]<A[left] && A[p]>A[right]，那么left和right相对p逆序：
+
+   p  | left | right
+------|------|------
+pivot | big  | small
+
+流程1中的两步交换（swap(right, p), swap(left, p)），本质上需要完成的消除相对逆序，因此可以精简优化。
+
+```
+# 初始支点位置，并备份pivot值（本轮固定）
+p = low = 0
+pivot = A[p]
+# 初始化左右游标
+l = low
+r = high
+# 右、左摇摆消除逆序对
+while (l<r) { # 至少两个元素
+    r = high        # 复位右游标，每次都是从最右向左扫描
+    # 从右向左比较，找到第一个小值A[r]
+    if (r > p)      # 右侧小值
+        A[p] = A[r] # 将右侧小值移到最左侧支点位置
+        p = r       # 暂存支点最新位置
+
+    l = low         # 复位左游标，每次都是从最左向右扫描
+    # 从左向右比较，找到第一个大值A[r]
+    if (l < p)      # 左侧大值
+        A[r] = A[l] # 将左侧大值移到最右侧小值位置
+        p = l       # 暂存支点最新位置
+
+    if (l >= r)     # 本轮分治结束，将pivot归位
+        A[p] = pivot
+        // break; // 退出 while循环
+    # else: 继续while循环寻找下一逆序对
+}
+```
+
+通过以上步骤，将小值交换到左边、大值交换到右边，从而消除一对逆序。
+
+ o_p  | o_l | o_r
+------|-----|------
+small |     | big
+
+以上摇摆过程中将交换（三条赋值）优化为一条赋值，只是记录更新pivot最新位置。
+每一轮左右摇摆结束，如果大值在右、小值在左（l>r），表明不再存在逆序对。
+特殊的，如果序列整体倒序，左侧pivot最大，右侧都是小值：
+
+1. 右向左：r=high，第一个即是小值，A[p]=A[r]，更新p=r；
+2. 左向右：抵达尽头都没找到大值，l=high=r。此时，pivot尚需归位。
+
+因此，在满足退出条件（l>=r）退出之前，需要将pivot复位：A[p]=pivot。
+
+以上算法流程，关键思路和 Hoare 原始算法基本是一致的，但是由于每次都覆盖了原始pivot位置，需要动态记录新的pivot位置。
+按照教科书上的描述，每次都要复位游标从一侧末端开始扫描，其实可以和 Hoare 一样不必复位游标，继续从上一次的游标位置向中间压缩推进。
+因为第一轮将右边的第一个小值和左边的第一个大值交换后，第二轮再扫描，右边的小值必然在之前小值位置左边，左边的大值必然在之前大值右边。
+
+这样改进后，Cocktail 和 Hoare 算法差异不大：
+
+1. Hoare 分治策略是先找到左右逆序对索引，再 swap 交换，right指向最右小值；
+2. Cocktail 是单边摇摆，两次赋值变相完成一次交换，更新记录pivot位置；
+3. 最终将 pivot 交换/赋值到支点所属位置，完成归位。
+
 ## 代码实现
 
 基于递归的分治算法，主体由三部分构成：
@@ -226,7 +293,7 @@ A[8] = {49,38,65,97,76,13,27,49}
     - left small part: [low, p-1]
     - right big part: [p+1, high]
 
-quickSort_Cocktail 和 quickSort_Lomuto 的主体结构完全一样，区别在于 partition 分治实现。
+quickSort_Cocktail 和 quickSort_Lomuto、quickSort_Hoare 的主体结构完全一样，区别在于 partition 分治实现。
 
 ```C
 // 对子数组 A[l:h] 进行快速排序，返回pivot分治索引
@@ -244,227 +311,4 @@ void quickSort_Cocktail(int *array, const int low, const int high) {
 }
 ```
 
-### C
-
-```C
-int *randomList(int n, int max);
-void swap(int *a, int *b);
-void dumpArray(const char* name, const int *array, const int size);
-void dumpSubArray(const char* name, const int *array, const int low, const int high);
-
-// 对子数组 A[l:h] 进行切割，返回pivot分治索引
-// 该分治策略采用的是单边双向摇摆，有点类似鸡尾酒冒泡排序。
-// 三元组通过左右两次交换，将小值交换到左边、大值交换到右边，
-// 从而生成以pivot为轴心的局部有序（升序）三元组：small<pivot<big。
-int partition_Cocktail(int *array, const int low, const int high) {
-    // 打印调试信息
-    char szName[128];
-    sprintf(szName, "array[%d:%d]", low, high);
-    dumpSubArray(szName, array, low, high);
-    // 选择第一个元素作为基准元素，本轮切割中pivot基准值保持不变，但其索引会动态更新。
-    int p = low, pivot = array[p];
-    // 初始化索引下界 left=low, 上界 right=high
-    int left = low, right = high;
-    while (left < right) {
-        // 每轮循环，for初始化复位左右游标
-        // 1.1 从右向左查找小值
-        for (right=high; right>=low; right--)
-            if (array[right] < pivot)
-                break;
-        // 1.2 找到右边小值，与基准交换
-        if (right > p) {
-            swap(&array[right], &array[p]);
-            p = right; // 更新基准索引
-        }
-        // else {
-        //     // pivot 最小，无需再从左向右查找大值，可提前结束
-        //     // 但 right 已到最左，会满足 while 退出条件
-        //     break;
-        // }
-        // 2.1 从左向右查找大值
-        for (left=low; left<=high; left++)
-            if (array[left] > pivot)
-                break;
-        // 2.2 找到左边大值，与基准交换（右边大值，符合顺序，无需交换）。
-        if (left < p) {
-            swap(&array[left], &array[p]);
-            p = left; // 更新基准索引
-        }
-        // else {
-        //     // 左边没有大值（都是小值），大值都在右边，可提前结束
-        //     // 但 left 已穿越到p右侧，会满足 while 退出条件
-        //     break;
-        // }
-
-        // left>=right: 重叠（overlap）或交叉（cross），while循环退出
-    }
-    //////////////////////////////////////////
-    // for 循环改为 while 循环
-    //////////////////////////////////////////
-    // while (left < right) {
-    //     // 每轮循环，复位索引下界 left=low, 上界 right=high
-    //     left = low, right = high;
-    //     // 1.1 从右向左查找小值
-    //     while (right>low && array[right]>=pivot)
-    //         right--;
-    //     // 1.2 找到右边小值，与基准交换
-    //     if (right > p) {
-    //         swap(&array[right], &array[p]);
-    //         p = right; // 更新基准索引
-    //     }
-    //     // 2.1 从左向右查找大值
-    //     while (left<=high && array[left]<=pivot)
-    //         left++;
-    //     // 2.2 找到左边大值，与基准交换（右边大值，符合顺序，无需交换）。
-    //     if (left < p) {
-    //         swap(&array[left], &array[p]);
-    //         p = left; // 更新基准索引
-    //     }
-    //     // left>=right: 重叠（overlap）或交叉（cross），while循环退出
-    // }
-    // 本轮分治完成：[小值],pivot,[大值]
-    // 打印调试信息
-    sprintf(szName, "Cocktail array[%d:%d]", low, high);
-    dumpSubArray(szName, array, low, high);
-    printf("pivot_index = %d\n", p);
-    // 返回 pivot 索引
-    return p;
-}
-
-// sort array in place
-// 对子数组 A[l:h] 进行快速排序，返回pivot分治索引
-void quickSort_Cocktail(int *array, const int low, const int high) {
-    // base case 1: overlap: low=high，只有一个元素
-    // base case 2: cross: high<low，左空(0,-1)，右空(h+1, h)
-    if (low >= high)
-        return;
-    // in-place compare and swap
-    int pivot_index = partition_Cocktail(array, low, high);
-    // recursion for left small part
-    quickSort_Cocktail(array, low, pivot_index-1);
-    // recursion for right big part
-    quickSort_Cocktail(array, pivot_index+1, high);
-}
-
-void test_qsort_Cocktail() {
-    int nLen = 10, max = 10;
-    int *array = randomList(nLen, max);
-    dumpArray("array", array, nLen);
-    quickSort_Cocktail(array, 0, nLen-1);
-    dumpArray("sorted array", array, nLen);
-    free(array);
-    printf("----------------------------------------\n");
-
-    // 测试用例：最左侧、最右侧部分已经排好序。
-    int A1[] = {2, 3, 5, 9, 4, 6, 8, 9, 10, 10};
-    nLen = sizeof(A1)/sizeof(int);
-    dumpArray("A1", A1, nLen);
-    quickSort_Cocktail(A1, 0, nLen-1);
-    dumpArray("sorted A1", A1, nLen);
-    printf("----------------------------------------\n");
-
-    // 测试用例：来源于 严蔚敏-《数据结构(C语言版）（第2版）》
-    int A2[] = {49, 38, 65, 97, 76, 13, 27, 49};
-    nLen = sizeof(A2)/sizeof(int);
-    dumpArray("A2", A2, nLen);
-    quickSort_Cocktail(A2, 0, nLen-1);
-    dumpArray("sorted A2", A2, nLen);
-}
-```
-
-### Python
-
-注意：Python 中 list 切片返回的是原数据的副本，如果 qsort_Lomuto 中传切片副本 A[:p]、A[p+1:]，需要返回拼接！
-
-```Python
-# 6.4-快速排序(Quick Sort)-cocktail
-
-import random
-
-# 对子数组 A[l:h] 进行切割，返回pivot分治索引
-# 该分治策略采用的是单边双向摇摆，有点类似鸡尾酒冒泡排序。
-# 三元组通过左右两次交换，将小值交换到左边、大值交换到右边，
-# 从而生成以pivot为轴心的局部有序（升序）三元组：small<pivot<big。
-def partition_Cocktail(A: list, low: int, high: int) -> int:
-    # 选择第一个元素作为基准元素
-    p = low; pivot = A[p]
-    # 打印调试信息
-    print('A[{}:{}]={}, pivot={}'.format(low, high, A[low:high+1], p))
-    # 初始化索引下界 left=low, 上界 right=high
-    left = low; right = high
-    while left < right:
-        # 每轮循环，复位索引下界 left=low, 上界 right=high
-        left = low; right = high
-        # 1.1 从右向左查找小值
-        while right>=low and A[right]>=pivot:
-            right -= 1
-        # 1.2 找到右边小值，与基准交换
-        if right > p:
-            A[right],A[p] = A[p], A[right]
-            p = right; # 更新基准索引
-        # 2.1 从左向右查找大值
-        while left<=high and A[left]<=pivot:
-            left += 1
-        # 2.2 找到左边大值，与基准交换（右边大值，符合顺序，无需交换）。
-        if left < p:
-            A[left],A[p] = A[p], A[left]
-            p = left; # 更新基准索引
-        # left>=right: 重叠（overlap）或交叉（cross），while循环退出
-
-    # 本轮分治完成：[小值],pivot,[大值]
-    # 打印调试信息
-    print('A[{}:{}]={}, homing pivot={}'.format(low, high, A[low:high+1], p))
-    # 返回 pivot 索引
-    return p
-
-# 对子数组 A[l:h] 进行快速排序，返回pivot分治索引
-def qsort_Cocktail(A: list, low: int, high: int):
-    # base case 1: overlap: low=high，只有一个元素
-    # base case 2: cross: high<low，左空(0,-1)，右空(h+1, h)
-    if low >= high:
-        return
-    # in-place compare and swap
-    p = partition_Cocktail(A, low, high)
-    # recursion for left small part
-    qsort_Cocktail(A, low, p-1)
-    # recursion for right big part
-    qsort_Cocktail(A, p+1, high)
-
-if __name__ == "__main__":
-    # 在 [1,10] 之间随机挑选6个数
-    n = 6; left = 1; right = 10
-    iList = random.sample(range(left,right+1), n)
-    print('iList =', iList)
-    qsort_Cocktail(iList, 0, len(iList)-1)
-    print('sorted iList =', iList)
-    print('-'*40)
-    # 重复部分元素
-    cList = random.sample(iList, k=10, counts=[1,2,3,1,2,1])
-    print('cList =', cList)
-    qsort_Cocktail(cList, 0, len(cList)-1)
-    print('sorted cList =', cList)
-    print('-'*40)
-    # 测试用例：最左侧、最右侧部分已经排好序。
-    A = [2, 3, 5, 9, 4, 6, 8, 9, 10, 10]
-    print('A =', A)
-    qsort_Cocktail(A, 0, len(A)-1)
-    print('sorted A =', A)
-    print('-'*40)
-    # 测试用例：来源于 严蔚敏-《数据结构(C语言版）（第2版）》
-    A2 = [49, 38, 65, 97, 76, 13, 27, 49]
-    print('A2 =', A2)
-    qsort_Cocktail(A2, 0, len(A2)-1)
-    print('sorted A2 =', A2)
-    print('-'*40)
-    # 测试用例：完全逆序。
-    A3 = list(range(20,30))
-    A3.reverse()
-    print('A3 =', A3)
-    qsort_Cocktail(A3, 0, len(A3)-1)
-    print('sorted A3 =', A3)
-    print('-'*40)
-    # 测试用例：初始有序。
-    print('A3 =', A3)
-    qsort_Cocktail(A3, 0, len(A3)-1)
-    print('sorted2 A3 =', A3)
-```
+**注意**：Python 中 list 切片返回的是原数据的副本，如果 qsort_Lomuto 中传切片副本 A[:p]、A[p+1:]，需要返回拼接！
