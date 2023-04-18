@@ -92,6 +92,7 @@ void shellSort1(int *array, const int size) {
                 }
             }
         }
+        dumpArray("shelled array", array, size);
         offset /= 2;
     }
 }
@@ -141,9 +142,9 @@ int main(int argc, char** argv) {
     // free(array);
     // printf("----------------------------------------\n");
 
-    // testRandomSort();
+    testRandomSort();
     // testPartiallyOrdered();
-    testReverseOrdered();
+    // testReverseOrdered();
 
     return 0;
 }

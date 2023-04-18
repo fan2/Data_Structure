@@ -135,9 +135,9 @@ int main(int argc, char** argv) {
     // free(array);
     // printf("----------------------------------------\n");
 
-    // testRandomSort();
+    testRandomSort();
     // testPartiallyOrdered();
-    testReverseOrdered();
+    // testReverseOrdered();
 
     return 0;
 }
