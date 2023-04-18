@@ -119,8 +119,8 @@ int partition_Lomuto(int *array, const int low, const int high, const PIVOT_POSI
 // sort array in place
 // 对子数组 A[l:h] 进行快速排序，返回pivot分治索引
 void quickSort_Lomuto(int *array, const int low, const int high) {
-    // base case 1: overlap: low=high，只有一个元素
-    // base case 2: cross: high<low，左空(0,-1)，右空(h+1, h)
+    // base case 1: 只有一个元素: low=high
+    // base case 2: pivot居两端: high<low，居左左空(low,low-1)，居右右空(high+1,high)
     if (low >= high)
         return;
     // in-place compare and swap
@@ -225,8 +225,8 @@ int partition_Hoare(int *array, const int low, const int high, PIVOT_POSITION pi
 // sort array in place
 // 对子数组 A[l:h] 进行快速排序，返回pivot分治索引
 void quickSort_Hoare(int *array, const int low, const int high) {
-    // base case 1: overlap: low=high，只有一个元素
-    // base case 2: cross: high<low，左空(0,-1)，右空(h+1, h)
+    // base case 1: 只有一个元素: low=high
+    // base case 2: pivot居两端: high<low，居左左空(low,low-1)，居右右空(high+1,high)
     if (low >= high)
         return;
     // in-place compare and swap
@@ -358,8 +358,8 @@ int partition_Cocktail(int *array, const int low, const int high) {
 // sort array in place
 // 对子数组 A[l:h] 进行快速排序，返回pivot分治索引
 void quickSort_Cocktail(int *array, const int low, const int high) {
-    // base case 1: overlap: low=high，只有一个元素
-    // base case 2: cross: high<low，左空(0,-1)，右空(h+1, h)
+    // base case 1: 只有一个元素: low=high
+    // base case 2: pivot居两端: high<low，居左左空(low,low-1)，居右右空(high+1,high)
     if (low >= high)
         return;
     // in-place compare and swap
