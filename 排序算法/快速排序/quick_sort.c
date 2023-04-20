@@ -25,6 +25,10 @@ int *randomList(int n, int max, unsigned seed) {
         srand((unsigned)time(NULL));
     }
     int *randoms = (int *)malloc(n * sizeof(int));
+    if (!randoms) {
+        printf("randomList malloc failed!\n");
+        return NULL;
+    }
     memset(randoms, 0, n * sizeof(int));
     for (int i=0; i<n; i++) {
         int random = rand() % max + 1;
@@ -109,9 +113,11 @@ int partition_Lomuto(int *array, const int low, const int high, const PIVOT_POSI
         swap(&array[high], &array[++i]);
     }
     // 打印调试信息
-    sprintf(szName, "Lomuto array[%d:%d]", low, high);
-    dumpSubArray(szName, array, low, high);
-    printf("pivot_index = %d\n", i);
+    sprintf(szName, "    [%d:%d]", low, i-1);
+    dumpSubArray(szName, array, low, i-1);
+    printf("    [%d] = %d\n", i, array[i]);
+    sprintf(szName, "    [%d:%d]", i+1, high);
+    dumpSubArray(szName, array, i+1, high);
     // 返回 pivot 索引
     return i;
 }
@@ -214,9 +220,11 @@ int partition_Hoare(int *array, const int low, const int high, PIVOT_POSITION pi
 
     // 本轮分治完成：[小值],pivot,[大值]
     // 打印调试信息
-    sprintf(szName, "Hoare array[%d:%d]", low, high);
-    dumpSubArray(szName, array, low, high);
-    printf("pivot_index = %d\n", p);
+    sprintf(szName, "    [%d:%d]", low, p-1);
+    dumpSubArray(szName, array, low, p-1);
+    printf("    [%d] = %d\n", p, array[p]);
+    sprintf(szName, "    [%d:%d]", p+1, high);
+    dumpSubArray(szName, array, p+1, high);
 
     // 返回 pivot 索引
     return p;
@@ -230,7 +238,7 @@ void quickSort_Hoare(int *array, const int low, const int high) {
     if (low >= high)
         return;
     // in-place compare and swap
-    int pivot_index = partition_Hoare(array, low, high, PIVOT_TAIL);
+    int pivot_index = partition_Hoare(array, low, high, PIVOT_HEAD);
     // recursion for left small part
     quickSort_Hoare(array, low, pivot_index-1);
     // recursion for right big part
@@ -304,9 +312,12 @@ int partition_Cocktail_0(int *array, const int low, const int high) {
 
     // 本轮分治完成：[小值],pivot,[大值]
     // 打印调试信息
-    sprintf(szName, "Cocktail array[%d:%d]", low, high);
-    dumpSubArray(szName, array, low, high);
-    printf("pivot_index = %d\n", p);
+    sprintf(szName, "    [%d:%d]", low, p-1);
+    dumpSubArray(szName, array, low, p-1);
+    printf("    [%d] = %d\n", p, array[p]);
+    sprintf(szName, "    [%d:%d]", p+1, high);
+    dumpSubArray(szName, array, p+1, high);
+
     // 返回 pivot 索引
     return p;
 }
@@ -348,9 +359,12 @@ int partition_Cocktail(int *array, const int low, const int high) {
 
     // 本轮分治完成：[小值],pivot,[大值]
     // 打印调试信息
-    sprintf(szName, "Cocktail array[%d:%d]", low, high);
-    dumpSubArray(szName, array, low, high);
-    printf("pivot_index = %d\n", p);
+    sprintf(szName, "    [%d:%d]", low, p-1);
+    dumpSubArray(szName, array, low, p-1);
+    printf("    [%d] = %d\n", p, array[p]);
+    sprintf(szName, "    [%d:%d]", p+1, high);
+    dumpSubArray(szName, array, p+1, high);
+
     // 返回 pivot 索引
     return p;
 }
@@ -413,5 +427,5 @@ int main(int argc, char** argv) {
     int scheme = PARTITION_SCHEME_LOMUTO;
     test_qsort(scheme);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

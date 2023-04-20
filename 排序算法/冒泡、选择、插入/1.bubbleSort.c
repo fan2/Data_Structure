@@ -14,6 +14,10 @@ int *randomList(int n, int max, unsigned seed) {
         srand((unsigned)time(NULL));
     }
     int *randoms = (int *)malloc(n * sizeof(int));
+    if (!randoms) {
+        printf("randomList malloc failed!\n");
+        return NULL;
+    }
     memset(randoms, 0, n * sizeof(int));
     for (int i=0; i<n; i++) {
         int random = rand() % max + 1;
@@ -200,5 +204,5 @@ int main(int argc, char** argv) {
     // testPartiallyOrdered();
     // testReverseOrdered();
 
-    return 0;
+    return EXIT_SUCCESS;
 }

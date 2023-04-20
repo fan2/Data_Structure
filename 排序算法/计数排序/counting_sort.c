@@ -14,6 +14,10 @@ int *randomList(int n, int max, unsigned seed) {
         srand((unsigned)time(NULL));
     }
     int *randoms = (int *)malloc(n * sizeof(int));
+    if (!randoms) {
+        printf("randomList malloc failed!\n");
+        return NULL;
+    }
     memset(randoms, 0, n * sizeof(int));
     for (int i=0; i<n; i++) {
         int random = rand() % max + 1;
@@ -73,6 +77,10 @@ int *countingSortLoop(int *const array, const int size)
     int bucketCount = max - min + 1;
     printf("min = %d, max = %d, bucketCount=%d\n", min, max, bucketCount);
     int *buckets = (int *)malloc(sizeof(array[0]) * bucketCount);
+    if (!buckets) {
+        printf("countingSortLoop malloc failed!\n");
+        return NULL;
+    }
     memset(buckets, 0, bucketCount * sizeof(int));
     int i = 0;
     // 统计每个值的个数
@@ -83,6 +91,10 @@ int *countingSortLoop(int *const array, const int size)
     dumpArray("bucketes", buckets, bucketCount);
     // 分配与原始数组容量相同的结果数组
     int *sortedArray = (int *)malloc(size * sizeof(array[0]));
+    if (!sortedArray) {
+        printf("countingSortLoop malloc failed!\n");
+        return NULL;
+    }
     memset(sortedArray, 0, size * sizeof(int));
     int j = 0;
     // 依次遍历桶，索引为原始元素，值为次数
@@ -105,6 +117,10 @@ int *countingSortIndex(int *const array, const int size)
     int bucketCount = max - min + 1;
     printf("min = %d, max = %d, bucketCount=%d\n", min, max, bucketCount);
     int *buckets = (int *)malloc(sizeof(array[0]) * bucketCount);
+    if (!buckets) {
+        printf("countingSortIndex malloc failed!\n");
+        return NULL;
+    }
     memset(buckets, 0, bucketCount * sizeof(int));
     int i = 0, j = 0, k = 0;
     // 1. 统计每个元素的个数
@@ -121,6 +137,10 @@ int *countingSortIndex(int *const array, const int size)
     dumpArray("cumulative buckets", buckets, bucketCount);
     // 分配与原始数组容量相同的结果数组
     int *sortedArray = (int *)malloc(size * sizeof(array[0]));
+    if (!sortedArray) {
+        printf("countingSortIndex malloc failed!\n");
+        return NULL;
+    }
     memset(sortedArray, 0, size * sizeof(int));
     // 3. 根据排名定排序索引
     // 依次遍历原始元素，依据其累计计数（即排名）确定其索引
@@ -154,5 +174,5 @@ int main(int argc, char **argv)
 
     free(array);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
