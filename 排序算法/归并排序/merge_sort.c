@@ -103,6 +103,9 @@ int *mergeSortedArrays(const int *a1, const int size1, const int *a2, const int 
 void merge(int *array, const int low, const int mid, const int high) {
     // 先将array拷贝出来，作为操作数据源
     int size = high-low+1;
+    if (size <= 1)
+        return;
+
     int *temp = (int *)malloc(size * sizeof(int));
     if (temp == NULL) {
         printf("merge malloc failed!\n");
@@ -144,14 +147,47 @@ void merge(int *array, const int low, const int mid, const int high) {
 }
 
 // 就地对数组 A[l:h] 进行归并排序
-void mergeSort(int *array, const int low, const int high) {
+void mergeSortRecur(int *array, const int low, const int high) {
     // base case: 只有一个元素，直接返回。
     if (low >= high)
         return;
     int mid = (low+high)/2; // median
-    mergeSort(array, low, mid); // left-half
-    mergeSort(array, mid+1, high); // right-half
+    mergeSortRecur(array, low, mid); // left-half
+    mergeSortRecur(array, mid+1, high); // right-half
     merge(array, low, mid, high); // merge [low, mid] and [mid+1, high] in place
+}
+
+// 就地对数组 A[l:h] 进行归并排序
+void mergeSortBisect(int *array, const int low, const int high) {
+    // base case: 只有一个元素，直接返回。
+    if (low >= high)
+        return;
+    int len = high-low+1;
+    // 归并单元长度：i=1,2,4,...
+    for (int i=1; i<len; i*=2) {
+        // 归并对数
+        int pair = (len+1)/(2*i);
+        if (pair > 0) {
+            printf("--------------------\n");
+            printf("i=%d, pair=%d\n", i, pair);
+            // 逐对归并
+            int l = 0, h = 0;
+            for (int k=0; k<pair; k++) {
+                l=k*i*2;
+                h=(k+1)*i*2-1;
+                if (h > len-1)
+                    h = len-1; // 修正右边最大索引
+                int m=(l+h)/2;
+                printf("k=%d, [l,m,h] = %d,%d,%d\n", k, l, m, h);
+                merge(array, l, m, h); // 二路归并：[l,m], [m+1, h]
+            }
+            // 尾部落单，补充归并
+            if (h<len-1) {
+                printf("complement [l,m,h] = %d,%d,%d\n", l, h, len-1);
+                merge(array, l, h, len-1); // 补充归并：[l,h], [h, len-1]
+            }
+        }
+    }
 }
 
 void testMergeSort() {
@@ -175,23 +211,35 @@ void testMergeSort() {
     free(A);
 }
 
+void testMergeSortRecur() {
+    // 测试用例：wiki Merge_sort_algorithm_diagram.svg
+    int A1[7] = {38, 27, 43, 3, 9, 82, 10};
+    // 测试用例：来源于 严蔚敏-《数据结构(C语言版）（第2版）》
+    // int A1[7] = {49, 38, 65, 97, 76, 13, 27};
+    int l1 = sizeof(A1)/sizeof(int);
+    dumpArray("A1", A1, l1);
+    mergeSortRecur(A1, 0, l1-1);
+    dumpArray("sorted A1", A1, l1);
+    printf("----------------------------------------\n");
+}
+
+void testMergeSortBisect() {
+    // int A2[5] = {38, 27, 43, 3, 9};
+    // int A2[6] = {38, 27, 43, 3, 9, 82};
+    int A2[7] = {38, 27, 43, 3, 9, 82, 10};
+    // int A2[8] = {38, 27, 43, 3, 9, 82, 10, 16};
+    // int A2[9] = {38, 27, 43, 3, 9, 82, 10, 16, 52};
+    int l2 = sizeof(A2)/sizeof(int);
+    dumpArray("A2", A2, l2);
+    mergeSortBisect(A2, 0, l2-1);
+    dumpArray("sorted A2", A2, l2);
+    printf("----------------------------------------\n");
+}
+
 int main(int argc, char** argv) {
     // testMergeSort();
 
-    // 测试用例：wiki Merge_sort_algorithm_diagram.svg
-    int A1[] = {38, 27, 43, 3, 9, 82, 10};
-    int l1 = sizeof(A1)/sizeof(int);
-    dumpArray("A1", A1, l1);
-    mergeSort(A1, 0, l1-1);
-    dumpArray("sorted A1", A1, l1);
-    printf("----------------------------------------\n");
-    // 测试用例：来源于 严蔚敏-《数据结构(C语言版）（第2版）》
-    int A2[] = {49, 38, 65, 97, 76, 13, 27};
-    int l2 = sizeof(A2)/sizeof(int);
-    dumpArray("A2", A2, l2);
-    mergeSort(A2, 0, l2-1);
-    dumpArray("sorted A2", A2, l2);
-    printf("----------------------------------------\n");
+    testMergeSortBisect();
 
     return EXIT_SUCCESS;
 }
