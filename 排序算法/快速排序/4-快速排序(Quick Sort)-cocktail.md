@@ -53,7 +53,7 @@ division | [小值] | pivot | [大值]
 
 ---
 
-对于pivot=A[p]，如果满足 A[b]>pivot 和  A[s]<pivot，那么b和s相对p逆序：
+对于pivot=A[p]，如果满足 A[b]>pivot 和 A[s]<pivot，那么b和s相对p逆序：
 
    p  |  b  |  s
 ------|-----|------
