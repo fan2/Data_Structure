@@ -2,26 +2,30 @@
 /*    程式实例: 6_4.c                       */
 /*    汉诺塔问题                            */
 /* ======================================== */
+#include <stdio.h>
 
 /* ---------------------------------------- */
-/*  河内塔问题的递归函数                    */
+/*  河内塔问题的递归函数                       */
 /* ---------------------------------------- */
-int hanoi(int dishs,int peg1,int peg2,int peg3)
+void hanoi(int dishs, int peg1, int peg2, int peg3)
 {
-   if ( dishs == 1)               /* 终止条件       */
-      printf("盘子从 %d 移到 %d\n",peg1,peg3);
-   else
-   {
-      hanoi(dishs - 1,peg1,peg3,peg2);  /* 第一步骤 */
-      printf("盘子从 %d 移到 %d\n",peg1,peg3);
-      hanoi(dishs - 1,peg2,peg1,peg3);  /* 第三步骤 */
-   }
+    if (dishs == 1) /* 终止条件：将最后一个盘子从木桩 1 搬到木桩 3 */
+        printf("    盘子从 %d 移到 %d\n", peg1, peg3);
+    else
+    {
+        /* 第一步骤：将 n-1 个盘子经 peg3 中转，从 peg1 搬到 peg2 */
+        hanoi(dishs - 1, peg1, peg3, peg2);
+        printf("盘子从 %d 移到 %d\n", peg1, peg3);
+        /* 第三步骤：将 n-1 个盘子经 peg1 中转，从 pge2 搬到 peg3 */
+        hanoi(dishs - 1, peg2, peg1, peg3);
+    }
 }
 
 /* ---------------------------------------- */
 /*  主程式: 找出河内塔问题的解.             */
 /* ---------------------------------------- */
-void main()
+int main(int argc, char *argv[])
 {
-   hanoi(3,1,2,3);                /* 调用递归函数   */
+    hanoi(3, 1, 2, 3); /* 调用递归函数   */
+    return 0;
 }

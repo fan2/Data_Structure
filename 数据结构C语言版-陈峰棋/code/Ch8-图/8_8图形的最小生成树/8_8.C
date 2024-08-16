@@ -1,129 +1,133 @@
 /* ======================================== */
-/*    ³ÌÊ½ÊµÀı: 8_8.c                    */
-/*    Í¼ĞÎµÄ×îĞ¡Éú³ÉÊ÷                  */
+/*    ç¨‹åºå®ä¾‹ï¼š8_8.c                        */
+/*    å›¾çš„æœ€å°ç”Ÿæˆæ ‘                          */
 /* ======================================== */
+#include <stdio.h>
 #include <stdlib.h>
 
-struct edge                       /* Í¼ĞÎ±ßÏß½á¹¹Ğû¸æ     */
+struct edge /* å›¾è¾¹ç»“æ„å£°æ˜ */
 {
-   int from;                      /* ¿ªÊ¼¶¥µã×ÊÁÏ         */
-   int to;                        /* ÖÕµã¶¥µã×ÊÁÏ         */
-   int weight;                    /* ³É±¾                 */
-   struct edge *nextedge;         /* Ö¸ÏÂÒ»±ßÏßµÄÖ¸±ê     */
+    int from;              /* å¼€å§‹é¡¶ç‚¹æ•°æ® */
+    int to;                /* ç»ˆç‚¹é¡¶ç‚¹æ•°æ® */
+    int weight;            /* æƒå€¼ */
+    struct edge *nextedge; /* æŒ‡ä¸‹ä¸€è¾¹çš„æŒ‡é’ˆ */
 };
-typedef struct edge *edgelist;    /* ±ßÏßµÄ½á¹¹ĞÂĞÍÌ¬     */
-edgelist list = NULL;             /* ±ßÏßÁ´±í¿ªÊ¼Ö¸±ê     */
-int node[6];                      /* ¶¥µãÊı×é             */
+typedef struct edge *edgelist; /* è¾¹çš„ç»“æ„æ–°ç±»å‹ */
+edgelist list = NULL;          /* è¾¹é“¾è¡¨å¼€å§‹æŒ‡é’ˆ */
+int node[6];                   /* é¡¶ç‚¹æ•°ç»„      */
 
 /* ---------------------------------------- */
-/*  ½¨Á¢±ßÏßÁ´±í                            */
+/*  åˆ›å»ºè¾¹é“¾è¡¨                                */
 /* ---------------------------------------- */
-edgelist createedgelist(edgelist list,int *edges,int num)
+edgelist createedgelist(edgelist list, int *edges, int num)
 {
-   edgelist newnode;              /* ĞÂ±ßÏß½ÚµãÖ¸±ê       */
-   edgelist last;                 /* ×îºó±ßÏß½ÚµãÖ¸±ê     */
-   int i;
+    edgelist newnode; /* æ–°è¾¹ç»“ç‚¹æŒ‡é’ˆ */
+    edgelist last;    /* æœ€åè¾¹ç»“ç‚¹æŒ‡é’ˆ */
+    int i;
 
-   for ( i = 0; i < num; i++ )    /* ½¨Á¢±ßÏßÁ´±í»ØÂ·     */
-   {
-      /* ½¨Á¢ĞÂ±ßÏß¼ÇÒäÌå */
-      newnode = ( edgelist ) malloc (sizeof( struct edge ));
-      newnode->from = edges[3*i]; /* ±ßÏßµÄÆğµã           */
-      newnode->to = edges[3*i+1]; /* ±ßÏßµÄÖÕµã           */
-      newnode->weight = edges[3*i+2]; /* ½¨Á¢³É±¾ÄÚÈİ     */
-      newnode->nextedge = NULL;   /* Éè¶¨Ö¸±ê³õÖµ         */
-      if ( list == NULL )         /* µÚÒ»¸ö½Úµã           */
-      {
-         list = newnode;          /* ½¨Á¢Á´±í¿ªÊ¼Ö¸±ê     */
-         last = list;             /* ±£Áô×îºó½ÚµãÖ¸±ê     */
-      }
-      else
-      {
-         last->nextedge = newnode;  /* Á´½áÖÁ×îºó½Úµã     */
-         last = newnode;          /* ±£Áô×îºó½ÚµãÖ¸±ê     */
-      }
-   }
-   return list;                   /* ´«»ØÁ´±í¿ªÊ¼Ö¸±ê     */
+    for (i = 0; i < num; i++) /* åˆ›å»ºè¾¹é“¾è¡¨å¾ªç¯ */
+    {
+        /* åˆ›å»ºæ–°è¾¹å†…å­˜ */
+        newnode = (edgelist)malloc(sizeof(struct edge));
+        newnode->from = edges[3 * i];       /* è¾¹çš„èµ·ç‚¹ */
+        newnode->to = edges[3 * i + 1];     /* è¾¹çš„ç»ˆç‚¹ */
+        newnode->weight = edges[3 * i + 2]; /* åˆ›å»ºæˆæœ¬å†…å®¹ */
+        newnode->nextedge = NULL;           /* è®¾ç½®æŒ‡é’ˆåˆå€¼ */
+        if (list == NULL)                   /* ç¬¬ä¸€ä¸ªç»“ç‚¹ */
+        {
+            list = newnode; /* åˆ›å»ºé“¾è¡¨å¼€å§‹æŒ‡é’ˆ */
+            last = list;    /* ä¿ç•™æœ€åç»“ç‚¹æŒ‡é’ˆ */
+        }
+        else
+        {
+            last->nextedge = newnode; /* é“¾æ¥åˆ°æœ€åç»“ç‚¹ */
+            last = newnode;           /* ä¿ç•™æœ€åç»“ç‚¹æŒ‡é’ˆ */
+        }
+    }
+    return list; /* è¿”å›é“¾è¡¨å¼€å§‹æŒ‡é’ˆ */
 }
 
 /* ---------------------------------------- */
-/*  ½áºÏ³ÉÍ¬Ò»¼¯ºÏ                          */
+/*  ç»“åˆæˆåŒä¸€é›†åˆ                            */
 /* ---------------------------------------- */
-int uniongroup(int from,int to)
+int uniongroup(int from, int to)
 {
-   int to_root;
+    int to_root;
 
-   to_root = to;                  /* ´ÓÖÕµã¶¥µãÕÒ         */
-   while ( node[to_root] > 0 )
-      to_root = node[to_root];
-   node[to_root] = from;          /* ½áºÏÁ½¸ö¶¥µã         */
+    to_root = to; /* ä»ç»ˆç‚¹é¡¶ç‚¹æ‰¾ */
+    while (node[to_root] > 0)
+        to_root = node[to_root];
+    node[to_root] = from; /* ç»“åˆä¸¤ä¸ªé¡¶ç‚¹ */
+
+    return 0; // success
 }
 
 /* ---------------------------------------- */
-/*  ÊÇ·ñ´æÔÚÍ¬Ò»¼¯ºÏ                        */
+/*  æ˜¯å¦å­˜åœ¨åŒä¸€é›†åˆ                           */
 /* ---------------------------------------- */
-int samegroup(int from,int to)
+int samegroup(int from, int to)
 {
-   int from_root;
-   int to_root;
+    int from_root;
+    int to_root;
 
-   from_root = from;              /* ´Ó¿ªÊ¼¶¥µãÕÒ         */
-   while ( node[from_root] > 0 )
-      from_root = node[from_root];
-   to_root = to;                  /* ´ÓÖÕµã¶¥µãÕÒ         */
-   while ( node[to_root] > 0 )
-      to_root = node[to_root];
-   if ( from_root == to_root )    /* ÊÇ·ñÍ¬Ò»¼¯ºÏ         */
-      return 1;
-   else
-      return 0;
+    from_root = from; /* ä»å¼€å§‹é¡¶ç‚¹æ‰¾ */
+    while (node[from_root] > 0)
+        from_root = node[from_root];
+    to_root = to; /* ä»ç»ˆç‚¹é¡¶ç‚¹æ‰¾ */
+    while (node[to_root] > 0)
+        to_root = node[to_root];
+    if (from_root == to_root) /* æ˜¯å¦åŒä¸€é›†åˆ */
+        return 1;
+    else
+        return 0;
 }
 
 /* ---------------------------------------- */
-/*  Í¼ĞÎµÄ×îĞ¡Éú³ÉÊ÷                    */
+/*  å›¾çš„æœ€å°ç”Ÿæˆæ ‘                            */
 /* ---------------------------------------- */
 void minspantree()
 {
-   edgelist ptr;
+    edgelist ptr;
 
-   ptr = list;                    /* Ö¸ÏòÁ´±í¿ªÊ¼         */
-   while ( ptr != NULL )
-   {
-      /* ÊÇ·ñ´æÔÚÍ¬Ò»¼¯ºÏ */
-      if ( !samegroup(ptr->from,ptr->to) )
-      {
-         /* Ó¡³ö×îĞ¡³É±¾µÄ±ß¶Ğ */
-         printf(" ´Ó¶¥µã: %d µ½: %d ³É±¾: %d\n",ptr->from,
-                  ptr->to,ptr->weight);
-         uniongroup(ptr->from,ptr->to); /* ½áºÏ³ÉÍ¬Ò»¼¯ºÏ */
-      }
-      ptr = ptr->nextedge;        /* ÏÂÒ»±ßÏß             */
-   }
+    ptr = list; /* Ö¸æŒ‡å‘é“¾è¡¨å¼€å§‹ */
+    while (ptr != NULL)
+    {
+        /* æ˜¯å¦å­˜åœ¨åŒä¸€é›†åˆ */
+        if (!samegroup(ptr->from, ptr->to))
+        {
+            /* è¾“å‡ºæœ€å°æƒå€¼çš„ */
+            printf(" ä»é¡¶ç‚¹: %d åˆ°: %d æƒå€¼: %d\n", ptr->from,
+                   ptr->to, ptr->weight);
+            uniongroup(ptr->from, ptr->to); /* ç»“åˆæˆåŒä¸€é›†åˆ */
+        }
+        ptr = ptr->nextedge; /* ä¸‹ä¸€è¾¹ */
+    }
 }
 
 /* ---------------------------------------- */
-/*  Ö÷³ÌÊ½: Í¼ĞÎµÄ×îĞ¡Éú³ÉÊ÷            */
+/*  ä¸»ç¨‹åºï¼šå›¾çš„æœ€å°ç”Ÿæˆæ ‘                      */
 /* ---------------------------------------- */
-void main()
+int main(int argc, char *argv[])
 {
-   int edges[8][3] = { { 1, 2, 2 }, /* ³É±¾±ßÏßÊı×é       */
-                       { 2, 4, 3 },
-                       { 1, 4, 4 },
-                       { 3, 5, 5 },
-                       { 2, 5, 6 },
-                       { 2, 3, 8 },
-                       { 3, 4, 10 },
-                       { 4, 5, 15 } };
-   int i;
+    int edges[8][3] = {{1, 2, 2}, /* æƒå€¼è¾¹æ•°ç»„ */
+                       {2, 4, 3},
+                       {1, 4, 4},
+                       {3, 5, 5},
+                       {2, 5, 6},
+                       {2, 3, 8},
+                       {3, 4, 10},
+                       {4, 5, 15}};
+    int i;
 
-   list = createedgelist(list,edges,8);   /* ½¨Á¢±ßÏßÁ´±í */
-   for ( i = 1; i <= 5; i++ )     /* ³õÊ¼¶¥µãÊı×é         */
-      node[i] = -1;
-   printf("Í¼ĞÎµÄ×îĞ¡Éú³ÉÊ÷:\n");
-   minspantree();                 /* ½¨Á¢×îĞ¡Éú³ÉÊ÷   */
-   printf("¶¥µãÊı×éÄÚÈİ:\n");
-   for ( i = 1; i <= 5; i++ )
-      printf("[%d]",node[i]);     /* Ó¡³ö¶¥µãÊı×é         */
-   printf("\n");                  /* »»ĞĞ                 */
+    list = createedgelist(list, (int *)edges, 8); /* åˆ›å»ºè¾¹é“¾è¡¨ */
+    for (i = 1; i <= 5; i++)                      /* åˆå§‹é¡¶ç‚¹æ•°ç»„ */
+        node[i] = -1;
+    printf("å›¾çš„æœ€å°ç”Ÿæˆæ ‘:\n");
+    minspantree(); /* åˆ›å»ºæœ€å°ç”Ÿæˆæ ‘ */
+    printf("é¡¶ç‚¹æ•°ç»„å†…å®¹:\n");
+    for (i = 1; i <= 5; i++)
+        printf("[%d]", node[i]); /* è¾“å‡ºé¡¶ç‚¹æ•°ç»„ */
+    printf("\n");                /* æ›è¡Œ */
+
+    return 0;
 }
-

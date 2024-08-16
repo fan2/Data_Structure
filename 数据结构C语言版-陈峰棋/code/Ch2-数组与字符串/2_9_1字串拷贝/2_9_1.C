@@ -1,29 +1,31 @@
 /* ======================================== */
-/*    程式实例: 2_9_1.c                     */
-/*    字串拷贝                              */
+/*    程式实例: 2_9_1.c                      */
+/*    字串拷贝                               */
 /* ======================================== */
+#include <stdio.h>
 
 /* ---------------------------------------- */
-/*  字串拷贝                                */
+/*  字串拷贝                                 */
 /* ---------------------------------------- */
 
 /* 确保接收字符串str1够长 */
-char *strcpy(char *str1,char *str2)
+char *strcpy(char *str1, char *str2)
 {
-   int i;
+    int i;
 
-   for ( i = 0; str2[i] != '\0'; i++ )
-      str1[i] = str2[i];          /* 拷贝字串内容 */
+    for (i = 0; str2[i] != '\0'; i++)
+        str1[i] = str2[i]; /* 拷贝字串内容 */
 
-   str1[i] = '\0';                /* 设定字串结束 */
+    str1[i] = '\0'; /* 设定字串结束 */
 
-   return str1;
+    return str1;
 }
 
 /* 第二种实现 */
-char* strcpy2(char* str1, char* str2)
+char *strcpy2(char *str1, char *str2)
 {
-    while(*str1++ = *str2++);
+    while ((*str1++ = *str2++))
+        ;
 
     /*
     while (*str2)
@@ -40,20 +42,19 @@ char* strcpy2(char* str1, char* str2)
 }
 
 /* ---------------------------------------- */
-/*  主程式: 读取字串後, 将它做备份.         */
+/*  主程式: 读取字串後, 将它做备份.              */
 /* ---------------------------------------- */
-int main()
+int main(int argc, char *argv[])
 {
-   char string[100];              /* 原始字串宣告 */
-   char backup[100];              /* 备份字串宣告 */
+    char string[100]; /* 原始字串宣告 */
+    char backup[100]; /* 备份字串宣告 */
 
-   printf("请输入字符串 ==> ");
-   gets(string);                  /* 读取字串     */
-   strcpy(backup,string);         /* 拷贝子字串   */
+    printf("请输入字符串 ==> ");
+    gets(string);           /* 读取字串     */
+    strcpy(backup, string); /* 拷贝子字串   */
 
-   printf("原始字符串 %s \n",string);  /* 印出原始字串 */
-   printf("备份字符串 %s \n",backup);  /* 印出备份字串 */
+    printf("原始字符串 %s \n", string); /* 印出原始字串 */
+    printf("备份字符串 %s \n", backup); /* 印出备份字串 */
 
-   return 0;
+    return 0;
 }
-

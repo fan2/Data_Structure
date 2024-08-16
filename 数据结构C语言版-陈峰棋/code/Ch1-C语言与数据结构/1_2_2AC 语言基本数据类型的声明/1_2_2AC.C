@@ -2,16 +2,17 @@
 /*    程序实例: 1_2_2a.c                    */
 /*    C 语言基本数据类型的声明          */
 /* ======================================== */
+#include <stdio.h>
 
-int main()
+int main(int argc, char *argv[])
 {
-   int    i = 2;                       /* 整数声明       */
-   char   c = 'c';                     /* 字符声明       */
-   float  f = 1.234;                   /* 单精度浮点数声明 */
-   double d = 2.345;                   /* 双精度浮点数声明*/
+    int i = 2;        /* 整数声明       */
+    char c = 'c';     /* 字符声明       */
+    float f = 1.234;  /* 单精度浮点数声明 */
+    double d = 2.345; /* 双精度浮点数声明*/
 
-   printf("输出变量值:%d %c %f %f\n",  /* 输出变量值     */
-           i,c,f,d);
+    printf("输出变量值:%d %c %f %f\n", /* 输出变量值 */
+           i, c, f, d);
 
-   return 0;
+    return 0;
 }

@@ -1,162 +1,167 @@
 /* ======================================== */
-/*    ³ÌÊ½ÊµÀı: 7_7.c                       */
-/*    ¶ş²æÊ÷µÄ½ÚµãÉ¾³ı                      */
+/*    ç¨‹å¼å®ä¾‹: 7_7.c                        */
+/*    äºŒå‰æ ‘çš„ç»“ç‚¹åˆ é™¤                         */
 /* ======================================== */
+#include <stdio.h>
 #include <stdlib.h>
 
-struct tree                       /* Ê÷µÄ½á¹¹Ğû¸æ       */
+struct tree /* æ ‘çš„ç»“æ„å®£å‘Š       */
 {
-   int data;                      /* ½ÚµãÊı¾İ           */
-   struct tree *left;             /* Ö¸Ïò×ó×ÓÊ÷µÄÖ¸±ê   */
-   struct tree *right;            /* Ö¸ÏòÓÒ×ÓÊ÷µÄÖ¸±ê   */
+    int data;           /* èŠ‚ç‚¹æ•°æ®          */
+    struct tree *left;  /* æŒ‡å‘å·¦å­æ ‘çš„æŒ‡æ ‡   */
+    struct tree *right; /* æŒ‡å‘å³å­æ ‘çš„æŒ‡æ ‡   */
 };
-typedef struct tree treenode;     /* Ê÷µÄ½á¹¹ĞÂĞÍÌ¬     */
-typedef treenode *btree;          /* Ğû¸æÊ÷½ÚµãÖ¸±êĞÍÌ¬ */
+typedef struct tree treenode; /* æ ‘çš„ç»“æ„æ–°å‹æ€    */
+typedef treenode *btree;      /* å®£å‘Šæ ‘èŠ‚ç‚¹æŒ‡æ ‡å‹æ€ */
 
 /* ---------------------------------------- */
-/*  ½¨Á¢¶ş²æÊ÷                              */
+/*  å»ºç«‹æ ‘çŠ¶ç»“æ„                            */
 /* ---------------------------------------- */
-btree createbtree(int *data,int pos)
+btree createbtree(int *data, int pos)
 {
-   btree newnode;                 /* ĞÂ½ÚµãÖ¸±ê         */
+    btree newnode; /* æ–°èŠ‚ç‚¹æŒ‡æ ‡         */
 
-   if ( data[pos] == 0 || pos > 15 )  /* ÖÕÖ¹Ìõ¼ş       */
-      return NULL;
-   else
-   {
-      /* ½¨Á¢ĞÂ½Úµã¼ÇÒäÌå */
-      newnode = ( btree ) malloc(sizeof(treenode));
-      newnode->data = data[pos];  /* ½¨Á¢½ÚµãÄÚÈİ       */
-      /* ½¨Á¢×ó×ÓÊ÷µÄµİ¹éºô½Ğ */
-      newnode->left = createbtree(data,2*pos);
-      /* ½¨Á¢ÓÒ×ÓÊ÷µÄµİ¹éºô½Ğ */
-      newnode->right = createbtree(data,2*pos+1);
-      return newnode;
-   }
+    if (data[pos] == 0 || pos > 15) /* ç»ˆæ­¢æ¡ä»¶       */
+        return NULL;
+    else
+    {
+        /* å»ºç«‹æ–°èŠ‚ç‚¹è®°å¿†ä½“ */
+        newnode = (btree)malloc(sizeof(treenode));
+        newnode->data = data[pos]; /* å»ºç«‹èŠ‚ç‚¹å†…å®¹       */
+        /* å»ºç«‹å·¦å­æ ‘çš„é€’å½’å‘¼å« */
+        newnode->left = createbtree(data, 2 * pos);
+        /* å»ºç«‹å³å­æ ‘çš„é€’å½’å‘¼å« */
+        newnode->right = createbtree(data, 2 * pos + 1);
+        return newnode;
+    }
 }
 
 /* ---------------------------------------- */
-/*  ¶ş²æÊ÷ËÑË÷                              */
+/* äºŒå‰æ ‘æŸ¥æ‰¾                                 */
 /* ---------------------------------------- */
-btree btreefind(btree ptr,int value,int *pos)
+btree btreefind(btree ptr, int value, int *pos)
 {
-   btree previous;                /* ¸¸½ÚµãÖ¸±ê         */
+    btree previous; /* çˆ¶ç»“ç‚¹æŒ‡é’ˆ */
 
-   previous = ptr;                /* Éè¶¨Ö¸±ê³õÖµ       */
-   *pos = 0;                      /* Éè¶¨Î»ÖÃ³õÖµ       */
-   while ( ptr != NULL )          /* Ö÷»ØÂ·             */
-   {
-      if ( ptr->data == value )   /* ÕÒµ½ÁË             */
-         return previous;         /* ´«»Ø¸¸½ÚµãÖ¸±ê     */
-      else
-         previous = ptr;          /* ±£Áô¸¸½ÚµãÖ¸±ê     */
-         if ( ptr->data > value ) /* ±È½ÏÊı¾İ           */
-         {
-            ptr = ptr->left;      /* ×ó×ÓÊ÷             */
-            *pos = -1;            /* posÊÇ-1            */
-         }
-         else
-         {
-            ptr = ptr->right;     /* ÓÒ×ÓÊ÷             */
-            *pos = 1;             /* posÊÇ1             */
-         }
-   }
-   return NULL;                   /* Ã»ÓĞÕÒµ½           */
+    previous = ptr;     /* è®¾ç½®æŒ‡é’ˆåˆå€¼ */
+    *pos = 0;           /* è®¾ç½®ä½ç½®åˆå€¼ */
+    while (ptr != NULL) /* ä¸»å¾ªç¯      */
+    {
+        if (ptr->data == value) /* æ‰¾åˆ°äº† */
+            return previous;    /* è¿”å›çˆ¶ç»“ç‚¹æŒ‡é’ˆ */
+        else
+            previous = ptr;     /* ä¿ç•™çˆ¶ç»“ç‚¹æŒ‡é’ˆ */
+        if (ptr->data > value)  /* æ¯”è¾ƒæ•°æ® */
+        {
+            ptr = ptr->left;    /* å·¦å­æ ‘ */
+            *pos = -1;          /* pos æ˜¯ -1 */
+        }
+        else
+        {
+            ptr = ptr->right;   /* å³å­æ ‘ */
+            *pos = 1;           /* pos æ˜¯ 1 */
+        }
+    }
+    return NULL; /* æ²¡æœ‰æ‰¾åˆ° */
 }
 
 /* ---------------------------------------- */
-/*  ¶ş²æÊ÷½ÚµãÉ¾³ı                          */
+/* äºŒå‰æ ‘ç»“ç‚¹åˆ é™¤                             */
 /* ---------------------------------------- */
-btree deletenode(btree root,int value)
+btree deletenode(btree root, int value)
 {
-   btree previous;                /* ¸¸½ÚµãÖ¸±ê         */
-   btree ptr;                     /* É¾³ıµÄ½ÚµãÖ¸±ê     */
-   btree next;                    /* ×Ó½ÚµãÖ¸±ê         */
-   int pos;                       /* É¾³ıÎ»ÖÃ           */
+    btree previous; /* çˆ¶ç»“ç‚¹æŒ‡é’ˆ    */
+    btree ptr;      /* åˆ é™¤çš„ç»“ç‚¹æŒ‡é’ˆ */
+    btree next;     /* å­ç»“ç‚¹æŒ‡é’ˆ    */
+    int pos;        /* åˆ é™¤ä½ç½®      */
 
-   /* Ñ°ÕÒ½ÚµãÖµµÄ¸¸½ÚµãÖ¸±ê */
-   previous = btreefind(root,value,&pos);
-   if ( previous == NULL )        /* Ã»ÓĞÕÒµ½           */
-      return root;
-   switch( pos )                  /* É¾³ıÎ»ÖÃ           */
-   {
-      case -1: ptr = previous->left;  /* ×ó×Ó½Úµã       */
-               break;
-      case  1: ptr = previous->right; /* ÓÒ×Ó½Úµã       */
-               break;
-      case  0: ptr = previous;        /* ¸ù½Úµã         */
-               break;
-   }
-   /* µÚÒ»ÖÖÇé¿ö: Ã»ÓĞ×ó×ÓÊ÷ */
-   if ( ptr->left == NULL )
-   {
-      if ( previous != ptr )      /* ÊÇ·ñÊÇ¸ù½Úµã       */
-         /* ²»ÊÇ, ¸¸½ÚµãµÄÓÒ×Ó½ÚµãÖ¸ÏòÄ¿Ç°½ÚµãµÄÓÒ×Ó½Úµã */
-         previous->right = ptr->right;
-      else
-         root = root->right;      /* ¸ù½ÚµãÖ¸ÏòÓÒ×Ó½Úµã */
-      free(ptr);                  /* ÊÍ»Ø½Úµã¼ÇÒäÌå     */
-      return root;                /* ´«»Ø¸ù½Úµã         */
-   }
-   /* µÚ¶şÖÖÇé¿ö: Ã»ÓĞÓÒ×ÓÊ÷ */
-   if ( ptr->right == NULL )
-   {
-      if ( previous != ptr )      /* ÊÇ·ñÊÇ¸ù½Úµã       */
-         /* ²»ÊÇ, ¸¸½ÚµãµÄ×ó×Ó½ÚµãÖ¸ÏòÄ¿Ç°½ÚµãµÄ×ó½Úµã  */
-         previous->left = ptr->left;
-      else
-         root = root->left;       /* ¸ù½ÚµãÖ¸Ïò×ó×Ó½Úµã */
-      free(ptr);                  /* ÊÍ»Ø½Úµã¼ÇÒäÌå     */
-      return root;                /* ´«»Ø¸ù½Úµã         */
-   }
-   /* µÚÈıÖÖÇé¿ö: ÓĞ×ó×ÓÊ÷ºÍÓÒ×ÓÊ÷ */
-   previous = ptr;                /* ¸¸½ÚµãÖ¸ÏòÄ¿Ç°½Úµã */
-   next = ptr->left;              /* Éè¶¨×Ó½Úµã         */
-   while ( next->right != NULL )  /* ÕÒµ½×îÓÒµÄÒ¶½Úµã   */
-   {
-      previous = next;            /* ±£Áô¸¸½ÚµãÖ¸±ê     */
-      next = next->right;         /* ÍùÓÒ×ÓÊ÷×ß         */
-   }
-   ptr->data = next->data;        /* Éè¶¨³ÉÒ¶½ÚµãÊı¾İ   */
-   if ( previous->left == next )  /* ½¨Á¢Á´½á           */
-      previous->left = next->left;    /* ÊÇ×ó×Ó½Úµã     */
-   else
-      previous->right = next->right;  /* ÊÇ×îÓÒµÄÒ¶½Úµã */
-   free(next);                    /* ÊÍ»Ø½Úµã¼ÇÒäÌå     */
-   return root;                   /* ´«»Ø¸ù½Úµã         */
+    /* å¯»æ‰¾ç»“ç‚¹å€¼çš„çˆ¶ç»“ç‚¹æŒ‡é’ˆ */
+    previous = btreefind(root, value, &pos);
+    if (previous == NULL)       /* æ²¡æœ‰æ‰¾åˆ° */
+        return root;
+    switch (pos)                /* åˆ é™¤ä½ç½® */
+    {
+    case -1:
+        ptr = previous->left;   /* å·¦å­ç»“ç‚¹ */
+        break;
+    case 1:
+        ptr = previous->right;  /* å³å­ç»“ç‚¹ */
+        break;
+    case 0:
+        ptr = previous;         /* æ ¹ç»“ç‚¹   */
+        break;
+    }
+    /* ç¬¬ä¸€ç§æƒ…å†µï¼šæ²¡æœ‰å·¦å­æ ‘ */
+    if (ptr->left == NULL)
+    {
+        if (previous != ptr)    /* æ˜¯å¦æ˜¯æ ¹ç»“ç‚¹ */
+            /* ä¸æ˜¯ï¼Œçˆ¶ç»“ç‚¹çš„å³å­ç»“ç‚¹æŒ‡å‘ç›®å‰ç»“ç‚¹çš„å³å­ç»“ç‚¹ */
+            previous->right = ptr->right;
+        else
+            root = root->right; /* æ ¹ç»“ç‚¹æŒ‡å‘å³å­ç»“ç‚¹ */
+        free(ptr);              /* é‡Šæ”¾ç»“ç‚¹å†…å­˜ */
+        return root;            /* è¿”å›æ ¹ç»“ç‚¹ */
+    }
+    /* ç¬¬äºŒç§æƒ…å†µï¼šæ²¡æœ‰å³å­æ ‘ */
+    if (ptr->right == NULL)
+    {
+        if (previous != ptr)    /* æ˜¯å¦æ˜¯æ ¹ç»“ç‚¹ */
+            /*ä¸æ˜¯ï¼Œçˆ¶ç»“ç‚¹çš„å·¦å­ç»“ç‚¹æŒ‡å‘ç›®å‰ç»“ç‚¹çš„å·¦ç»“ç‚¹ */
+            previous->left = ptr->left;
+        else
+            root = root->left;  /* æ ¹ç»“ç‚¹æŒ‡å‘å·¦å­ç»“ç‚¹ */
+        free(ptr);              /* é‡Šæ”¾ç»“ç‚¹å†…å­˜ */
+        return root;            /* è¿”å›æ ¹ç»“ç‚¹ */
+    }
+    /* ç¬¬ä¸‰ç§æƒ…å†µï¼šæœ‰å·¦å­æ ‘å’Œå³å­æ ‘ */
+    previous = ptr;             /* çˆ¶ç»“ç‚¹æŒ‡å‘ç›®å‰ç»“ç‚¹ */
+    next = ptr->left;           /* è®¾ç½®å­ç»“ç‚¹ */
+    while (next->right != NULL) /* æ‰¾åˆ°æœ€å³çš„å¶ç»“ç‚¹ */
+    {
+        previous = next;        /* ä¿ç•™çˆ¶ç»“ç‚¹æŒ‡é’ˆ */
+        next = next->right;     /* å¾€å³å­æ ‘èµ° */
+    }
+    ptr->data = next->data;             /* è®¾ç½®æˆå¶ç»“ç‚¹æ•°æ® */
+    if (previous->left == next)         /* åˆ›å»ºé“¾è¡¨ */
+        previous->left = next->left;    /* æ˜¯å·¦å­ç»“ç‚¹ */
+    else
+        previous->right = next->right;  /* æ˜¯æœ€å³çš„å¶ç»“ç‚¹ */
+    free(next);                         /* é‡Šæ”¾ç»“ç‚¹å†…å­˜ */
+    return root;                        /* è¿”å›æ ¹ç»“ç‚¹ */
 }
 
 /* ---------------------------------------- */
-/*  ¶ş²æÊ÷ÖĞĞòÁĞÓ¡                          */
+/*  äºŒå‰æ ‘çš„ä¸­åºéå†é€’å½’åˆ—å°                */
 /* ---------------------------------------- */
 void printbtree(btree ptr)
 {
-   if ( ptr != NULL )             /* ÖÕÖ¹Ìõ¼ş           */
-   {
-      printbtree(ptr->left);     /* ×ó×ÓÊ÷             */
-      printf("[%2d]",ptr->data);  /* ÁĞÓ¡½ÚµãÄÚÈİ       */
-      printbtree(ptr->right);    /* ÓÒ×ÓÊ÷             */
-   }
+    if (ptr != NULL)                /* ç»ˆæ­¢æ¡ä»¶           */
+    {
+        printbtree(ptr->left);      /* å·¦å­æ ‘             */
+        printf("[%2d]", ptr->data); /* åˆ—å°èŠ‚ç‚¹å†…å®¹        */
+        printbtree(ptr->right);     /* å³å­æ ‘             */
+    }
 }
 
 /* ---------------------------------------- */
-/*  Ö÷³ÌÊ½: ½¨Á¢¶ş²æÊ÷ºóÉ¾³ıÒ»½Úµã.         */
+/* ä¸»ç¨‹åºï¼šåˆ›å»ºäºŒå‰æ ‘ååˆ é™¤ä¸€ç»“ç‚¹                */
 /* ---------------------------------------- */
-void main()
+int main(int argc, char *argv[])
 {
-   btree root = NULL;             /* Ê÷¸ùÖ¸±ê           */
-   int value;                     /* ½ÚµãÖµ             */
+    btree root = NULL; /* æ ‘æ ¹æŒ‡é’ˆ */
+    int value;         /* ç»“ç‚¹å€¼ */
 
-   /* ¶ş²æÊ÷½ÚµãÊı¾İ */
-   int data[16] = { 0, 5, 4, 6, 2, 0, 0, 8, 1,
-                    3, 0, 0, 0, 0, 7, 9 };
-   root = createbtree(data,1);    /* ½¨Á¢Ê÷×´½á¹¹       */
-   printbtree(root);              /* ÖĞĞòÁĞÓ¡¶ş²æÊ÷     */
-   printf("\nÇëÊäÈëÑ°ÕÒ½ÚµãÊı¾İ ==> ");
-   scanf("%d",&value);            /* ¶ÁÈ¡½ÚµãÊı¾İ       */
-   root = deletenode(root,value); /* É¾³ı½ÚµãÖµÊÇvalue*/
-   printf("É¾³ıºóÊ÷µÄ½ÚµãÄÚÈİ \n");
-   printbtree(root);              /* ÖĞĞòÁĞÓ¡¶ş²æÊ÷     */
-   printf("\n");                  /* »»ĞĞ               */
+    /* äºŒå‰æ ‘ç»“ç‚¹æ•°æ® */
+    int data[16] = {0, 5, 4, 6, 2, 0, 0, 8, 1,
+                    3, 0, 0, 0, 0, 7, 9};
+    root = createbtree(data, 1);    /* åˆ›å»ºæ ‘çŠ¶ç»“æ„ */
+    printbtree(root);               /* ä¸­åºè¾“å‡ºäºŒå‰æ ‘ */
+    printf("\n è¯·è¾“å…¥å¯»æ‰¾ç»“ç‚¹æ•°æ®==> ");
+    scanf("%d", &value);            /* è¯»å–ç»“ç‚¹æ•°æ® */
+    root = deletenode(root, value); /* åˆ é™¤ç»“ç‚¹å€¼æ˜¯ value */
+    printf("åˆ é™¤åæ ‘çš„ç»“ç‚¹å†…å®¹ \n");
+    printbtree(root);               /* ä¸­åºè¾“å‡ºäºŒå‰æ ‘ */
+    printf("\n");                   /* æ¢è¡Œ         */
+
+    return 0;
 }
-

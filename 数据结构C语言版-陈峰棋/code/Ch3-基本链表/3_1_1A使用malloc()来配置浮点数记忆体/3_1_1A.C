@@ -5,21 +5,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main()
+int main(int argc, char *argv[])
 {
-   float *fp;                            /* 浮点指标宣告     */
+    float *fp; /* 浮点指标宣告     */
 
-   fp = (float *) malloc(sizeof(float)); /* 配置浮点数记忆体 */
+    fp = (float *)malloc(sizeof(float)); /* 配置浮点数记忆体 */
 
-   if ( !fp )                            /* 检查指标         */
-   {
-      printf("内存分配失败! \n");
-      exit(1);
-   }
+    if (!fp) /* 检查指标         */
+    {
+        printf("内存分配失败! \n");
+        exit(1);
+    }
 
-   *fp = 3.1415926;                      /* 设定变数值       */
+    *fp = 3.1415926; /* 设定变数值       */
 
-   printf("圆周率: %10.8f \n",*fp);      /* 列出结果         */
+    printf("圆周率: %10.8f \n", *fp); /* 列出结果         */
 
-   return 0;
+    return 0;
 }

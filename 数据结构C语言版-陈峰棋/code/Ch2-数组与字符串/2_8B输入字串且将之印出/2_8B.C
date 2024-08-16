@@ -6,24 +6,24 @@
 
 #include <stdio.h>
 
-int main()
+int main(int argc, char *argv[])
 {
-   char string[100];              /* 字串阵列宣告     */
-   char ch;                       /* 输入字元         */
-   int i;
+    char string[100]; /* 字串阵列宣告     */
+    char ch;          /* 输入字元         */
+    int i;
 
-   putchar('?');                  /* 列出提示输入讯息 */
-   i = 0;
-   while ( (ch = getchar()) != '\n' )  /* 输入字元    */
-   {
-      string[i] = ch;             /* 存入字串内       */
-      i++;
-   }
+    putchar('?'); /* 列出提示输入讯息 */
+    i = 0;
+    while ((ch = getchar()) != '\n') /* 输入字元    */
+    {
+        string[i] = ch; /* 存入字串内       */
+        i++;
+    }
 
-   string[i] = '\0';              /* 加结束字元       */
-   for ( i = 0; string[i] != '\0'; i++ ) 
-      putchar(string[i]);         /* 印出字串内容     */
-   putchar('\n');                 /* 换行             */
+    string[i] = '\0'; /* 加结束字元       */
+    for (i = 0; string[i] != '\0'; i++)
+        putchar(string[i]); /* 印出字串内容     */
+    putchar('\n');          /* 换行             */
 
-   return 0;
+    return 0;
 }
