@@ -5,7 +5,8 @@
 /* ======================================== */
 #include "btree.h"
 
-#define MAXNODE 32 /* 队列的最大容量      */
+// 层次遍历 4 层满二叉树，最后一层 8 个结点
+#define MAXNODE (8+1) /* 队列的实际有效容量: MAXQUEUE-1 */
 
 struct node_queue
 {

@@ -53,13 +53,53 @@ btree createbtree(int *data, int len) {
 }
 
 /* ---------------------------------------- */
-/*  二叉树层次遍历                            */
+/*  二叉树前序遍历                            */
 /* ---------------------------------------- */
-void levelorder(btree ptr) {
+void preorder(btree root) {
+  btree ptr = root;
+  if (ptr != NULL) /* 终止条件           */
+  {
+    printf("[%2d]\n", ptr->data); /* 列印节点内容     */
+    preorder(ptr->left);          /* 左子树          */
+    preorder(ptr->right);         /* 右子树          */
+  }
+}
+
+/* ---------------------------------------- */
+/*  二叉树中序遍历                            */
+/* ---------------------------------------- */
+void inorder(btree root) {
+  btree ptr = root;
+  if (ptr != NULL) /* 终止条件           */
+  {
+    inorder(ptr->left);           /* 左子树          */
+    printf("[%2d]\n", ptr->data); /* 列印节点内容     */
+    inorder(ptr->right);          /* 右子树          */
+  }
+}
+
+/* ---------------------------------------- */
+/*  二叉树后序遍历                            */
+/* ---------------------------------------- */
+void postorder(btree root) {
+  btree ptr = root;
+  if (ptr != NULL) /* 终止条件           */
+  {
+    postorder(ptr->left);         /* 左子树          */
+    postorder(ptr->right);        /* 右子树          */
+    printf("[%2d]\n", ptr->data); /* 列印节点内容     */
+  }
+}
+
+/* ---------------------------------------- */
+/*  二叉树层次遍历(基于两个队列实现)             */
+/* ---------------------------------------- */
+void levelorder(btree root) {
+  btree ptr = root;
   if (ptr != NULL) /* 终止条件           */
   {
     int index = 0;
-    int data[MAXNODE] = {0};
+    int data[15] = {0}; // 4 层满二叉树结点数=2^4-1
 
     struct node_queue curLayerQueue;
     initqueue(&curLayerQueue);
@@ -104,23 +144,24 @@ void levelorder(btree ptr) {
 
     puts("levelorder:");
     for (int i = 0; i < index; i++) {
-      printf("%d\n", data[i]);
+      printf("[%2d]\n", data[i]);
     }
   }
 }
 
 /* ---------------------------------------- */
-/*  二叉树层次遍历(优化为只需一个队列实现)         */
+/*  二叉树层次遍历(优化为基于一个队列实现)        */
 /* ---------------------------------------- */
-void levelorder1(btree ptr) {
+void levelorder1(btree root) {
+  btree ptr = root;
   if (ptr != NULL) /* 终止条件           */
   {
     int index = 0;
-    int data[MAXNODE] = {0};
+    int data[15] = {0}; // 4 层满二叉树结点数=2^4-1
 
     struct node_queue curLayerQueue;
     initqueue(&curLayerQueue);
-    // debugqueue(&curLayerQueue, 1);
+    debugqueue(&curLayerQueue, 1);
     printf("> levelorder: init current layer with root node = %d\n", ptr->data);
     enqueue(&curLayerQueue, ptr); // 根节点先入队列
 
@@ -142,22 +183,57 @@ void levelorder1(btree ptr) {
 
     puts("levelorder:");
     for (int i = 0; i < index; i++) {
-      printf("%d\n", data[i]);
+      printf("[%2d]\n", data[i]);
     }
   }
+}
+
+/*
+          5
+        4   6
+      2       8
+    1   3   7   9
+*/
+void test1() {
+  /* 二叉树节点数据: 第 4 层 4 个结点，设置 MAXNODE (4+1) */
+  int data[9] = {5, 6, 4, 8, 2, 3, 7, 1, 9};
+  btree root = createbtree(data, 9);
+  puts("preorder:");
+  preorder(root);
+  puts("inorder:");
+  inorder(root);
+  puts("postorder:");
+  postorder(root);
+  /* 层次遍历二叉树 */
+  levelorder1(root);
+}
+
+/*
+                        8
+            4                    12
+       2         6         10         14
+    1    3    5    7    9    11    13    15
+*/
+void test2() {
+  /* 满二叉树: 第 4 层 8 个结点，设置 MAXNODE (8+1) */
+  int data[15] = {8, 4, 2, 6, 1, 3, 5, 7, 12, 10, 14, 9, 11, 13, 15};
+  btree root = createbtree(data, 15);
+  puts("preorder:");
+  preorder(root);
+  puts("inorder:");
+  inorder(root);
+  puts("postorder:");
+  postorder(root);
+  /* 层次遍历二叉树 */
+  levelorder1(root);
 }
 
 /* ---------------------------------------- */
 /*  主程式: 建立二叉树且用层次遍历列印出来.        */
 /* ---------------------------------------- */
 int main(int argc, char *argv[]) {
-  btree root = NULL; /* 树根指标           */
-
-  /* 二叉树节点数据 */
-  int data[9] = {5, 6, 4, 8, 2, 3, 7, 1, 9};
-  root = createbtree(data, 9); /* 建立二叉树         */
-  // levelorder(root);            /* 层次遍历二叉树     */
-  levelorder(root); /* 层次遍历二叉树     */
+//   test1();
+  test2();
 
   return 0;
 }

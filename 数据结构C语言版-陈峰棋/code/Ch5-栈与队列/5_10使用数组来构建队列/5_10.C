@@ -7,9 +7,9 @@
 
 #define MAXQUEUE 10 /* 队列的最大容量   */
 
-int queue[MAXQUEUE]; /* 队列的数组宣告       */
-int front = -1;      /* 队列的前端, de(++f) */
-int rear = -1;       /* 队列的后端, en(++r) */
+int queue[MAXQUEUE]; /* 队列的数组宣告               */
+int front = -1;      /* 队列的前端, 已读位置, de(++f) */
+int rear = -1;       /* 队列的后端, 已写位置, en(++r) */
 
 /* ---------------------------------------- */
 /*  队列资料的存入                            */
@@ -18,13 +18,14 @@ int enqueue(int value)
 {
     printf("    enqueue: front=%d, rear=%d.\n", front, rear);
     // if (rear >= MAXQUEUE) /* 检查队列是否全满  */
-    if (rear+1 >= MAXQUEUE) { /* +1 fix overflow */
+    if (rear + 1 >= MAXQUEUE)
+    { /* +1 fix overflow */
         printf("    enqueue: rear-end.\n");
-        return -1;             /* 无法存入        */
+        return -1; /* 无法存入        */
     }
     // queue[++rear] = value;
-    rear++;                 /* 后端指标往前移   */
-    queue[rear] = value;    /* 存入队列        */
+    rear++;              /* 后端指标往前移   */
+    queue[rear] = value; /* 存入队列        */
     printf("    enqueue[rear=%d] = %d\n", rear, value);
 
     return 0; // success
@@ -36,12 +37,13 @@ int enqueue(int value)
 int dequeue()
 {
     printf("    dequeue: front=%d, rear=%d.\n", front, rear);
-    if (front == rear) {  /* 检查队列是否是空  */
+    if (front == rear)
+    { /* 检查队列是否是空  */
         printf("    dequeue: empty.\n");
-        return -1;       /* 无法取出        */
+        return -1; /* 无法取出        */
     }
     // return queue[++front];
-    front++;             /* 前端指标往前移   */
+    front++; /* 前端指标往前移   */
     printf("    dequeue[front=%d] = %d\n", front, queue[front]);
     return queue[front]; /* 队列取出        */
 }

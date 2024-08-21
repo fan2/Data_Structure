@@ -77,18 +77,43 @@ void postorder(btree ptr)
     }
 }
 
+/*
+          5
+        4   6
+      2       8
+    1   3   7   9
+*/
+void test1()
+{
+    /* 二叉树节点数据 */
+    int data[9] = {5, 6, 4, 8, 2, 3, 7, 1, 9};
+    btree root = createbtree(data, 9);
+    printf("树的节点内容(postorder)：\n");
+    postorder(root);
+}
+
+/*
+                        8
+            4                    12
+       2         6         10         14
+    1    3    5    7    9    11    13    15
+*/
+void test2()
+{
+    /* 满二叉树: 第 4 层 8 个结点 */
+    int data[15] = {8, 4, 2, 6, 1, 3, 5, 7, 12, 10, 14, 9, 11, 13, 15};
+    btree root = createbtree(data, 15);
+    printf("树的节点内容(postorder)：\n");
+    postorder(root);
+}
+
 /* ---------------------------------------- */
-/*  主程式: 建立二叉树且用后序遍历列印出来.        */
+/*  主程式: 建立二叉树且用后序遍历列印出来.       */
 /* ---------------------------------------- */
 int main(int argc, char *argv[])
 {
-    btree root = NULL; /* 树根指标           */
-
-    /* 二叉树节点数据 */
-    int data[9] = {5, 6, 4, 8, 2, 3, 7, 1, 9};
-    root = createbtree(data, 9); /* 建立二叉树         */
-    printf("树的节点内容 \n");
-    postorder(root); /* 后序遍历二叉树     */
+    test1();
+    test2();
 
     return 0;
 }
