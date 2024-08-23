@@ -8,6 +8,18 @@
 #include <string.h>
 #include "queue.h"
 
+/*
+1. [架构设计：生产者/消费者模式](https://blog.csdn.net/phunxm/article/details/5482766)
+2. [[3]：环形缓冲区](https://program-think.blogspot.com/2009/04/producer-consumer-pattern-3-circle.html)
+
+[u-boot/lib/circbuf.c at master · ARM-software/u-boot](https://github.com/ARM-software/u-boot/blob/master/lib/circbuf.c)
+[c-utils/src/circbuf.c at master · goToMain/c-utils](https://github.com/goToMain/c-utils/blob/master/src/circbuf.c)
+
+[std::queue - cppreference.com](https://en.cppreference.com/w/cpp/container/queue)
+[Chapter 7. Boost.Circular Buffer - 1.86.0](https://www.boost.org/doc/libs/1_86_0/doc/html/circular_buffer.html)
+[bloomen/circbuf: A circular buffer for C++20](https://github.com/bloomen/circbuf)
+*/
+
 /* ---------------------------------------- */
 /*  初始化队列空队列                           */
 /* ---------------------------------------- */
@@ -17,14 +29,17 @@
     1.2. 取出 1 个，front=0，rear=4，判断不能再存，实际容量衰减为 MAXQUEUE-1
     1.3. 再取 1 个，front=1，rear=4，可再存入 rear=0，然后 rear+1=front，不能再存
 
-如此设计， 以便区分已空和全满这两种情况。
+如此设计，可区分已空和全满这两种情况，但是初始容量和后续容量不一致。
 
  2. (front, rear)=(0,0): 实际容量始终保持 MAXQUEUE-1
     1.1. 初始，空置rear=0，可存 4 个元素至 rear=4(1,2,3,4);
     1.2. 取出 1 个，front=1，rear=4，判断可再存入 rear=0
     1.3. 判断 rear+1=front，无法再存
 
-如此修改，front空位相当于防止追尾的游标。
+如此修改，已空和全满区分判断不变，始终保持一个元素不用，front空位游标防止追尾。
+
+其他思路：引入额外整数变量，记录当前环中已经保存的元素个数，
+        当R-front和W-rear重叠的时候，通过该变量可判”空”或”满”。
  */
 
 void initqueue(struct node_queue *que)
