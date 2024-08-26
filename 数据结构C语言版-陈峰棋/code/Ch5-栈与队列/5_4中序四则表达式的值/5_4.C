@@ -1,9 +1,10 @@
 /* ======================================== */
-/*    程式实例: 5_4.c                       */
-/*    中序四则表达式的值                      */
+/*    程式实例: 5_4.c                        */
+/*    中序四则表达式的值                       */
 /* ======================================== */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct stack_node /* 栈的结构宣告     */
 {
@@ -19,14 +20,12 @@ link stack_operand = NULL;  /* 运算元栈指标     */
 /* ---------------------------------------- */
 /*  栈资料的存入                              */
 /* ---------------------------------------- */
-link push(link stack, int value)
-{
+link push(link stack, int value) {
     link new_node; /* 新节点指标         */
 
     /* 配置节点记忆体 */
     new_node = (link)malloc(sizeof(stack_list));
-    if (!new_node)
-    {
+    if (!new_node) {
         printf("记忆体配置失败! \n");
         return NULL; /* 存入失败           */
     }
@@ -40,19 +39,16 @@ link push(link stack, int value)
 /* ---------------------------------------- */
 /*  栈资料的取出                              */
 /* ---------------------------------------- */
-link pop(link stack, int *value)
-{
+link pop(link stack, int *value) {
     link top; /* 指向栈顶端       */
 
-    if (stack != NULL)
-    {
+    if (stack != NULL) {
         top = stack;         /* 指向栈顶端       */
         stack = stack->next; /* 栈指标指向下节点  */
         *value = top->data;  /* 取出资料         */
         free(top);           /* 释回节点记忆体    */
         return stack;        /* 传回栈指标       */
-    }
-    else
+    } else
         *value = -1;
 
     return stack;
@@ -61,125 +57,151 @@ link pop(link stack, int *value)
 /* ---------------------------------------- */
 /*  检查栈是否是空的                           */
 /* ---------------------------------------- */
-int empty(link stack)
-{
-    if (stack == NULL)  /* 是否是空           */
-        return 1;       /* 空的              */
+int empty(link stack) {
+    if (stack == NULL) /* 是否是空           */
+        return 1;      /* 空的              */
     else
-        return 0;       /* 不是空的           */
+        return 0; /* 不是空的           */
 }
 
 /* ---------------------------------------- */
 /*  是否是运算子                              */
 /* ---------------------------------------- */
-int isoperator(char op)
-{
-    switch (op)
-    {
-    case '+':
-    case '-':
-    case '*':
-    case '/':
-        return 1; /* 是运算子           */
+int isoperator(char op) {
+    switch (op) {
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+            return 1; /* 是运算子           */
 
-    default:
-        return 0; /* 不是运算子         */
+        default:
+            return 0; /* 不是运算子         */
     }
 }
 
 /* ---------------------------------------- */
 /*  运算子的优先权                            */
 /* ---------------------------------------- */
-int priority(char op)
-{
-    switch (op)
-    {
-    case '*':
-    case '/':
-        return 2;
-    case '+':
-    case '-':
-        return 1;
-    default:
-        return 0;
+int priority(char op) {
+    switch (op) {
+        case '*':
+        case '/':
+            return 2;
+        case '+':
+        case '-':
+            return 1;
+        default:
+            return 0;
     }
 }
 
 /* ---------------------------------------- */
 /*  计算二元表达式的值                         */
 /* ---------------------------------------- */
-int get_value(int op, int operand1, int operand2)
-{
-    switch ((char)op)
-    {
-    case '*':
-        return (operand2 * operand1);
-    case '/':
-        return (operand2 / operand1);
-    case '+':
-        return (operand2 + operand1);
-    case '-':
-        return (operand2 - operand1);
+int get_value(int op, int operand1, int operand2) {
+    switch ((char)op) {
+        case '*':
+            return (operand2 * operand1);
+        case '/':
+            return (operand2 / operand1);
+        case '+':
+            return (operand2 + operand1);
+        case '-':
+            return (operand2 - operand1);
     }
 
-    return -1; // should never reach here
+    return -1;  // should never reach here
+}
+
+/* ---------------------------------------- */
+/*  读取字符串，替代 gets                      */
+/* ---------------------------------------- */
+// char* gets_s( char* str, rsize_t n );
+void safe_gets(char *str, int size) {
+    char *ret = fgets(str, size, stdin);
+    if (ret) {
+        // 移除结尾的回车/换行符
+        char *posr = strchr(str, '\r');
+        if (posr) *posr = 0;
+        char *posn = strchr(str, '\n');
+        if (posn) *posn = 0;
+    }
 }
 
 /* ---------------------------------------- */
 /*  主程式: 输入中序表达式后, 计算其值.          */
 /* ---------------------------------------- */
-int main(int argc, char *argv[])
-{
-    char exp[100];    /* 表达式字符串变数    */
-    int op = 0;       /* 运算子变数         */
-    int operand1 = 0; /* 前运算元变数       */
-    int operand2 = 0; /* 后运算元变数       */
-    int result = 0;   /* 计算结果变数       */
-    int pos = 0;      /* 目前表达式位置     */
+// 这里只针对单字母ASCII值运算，对于多位数无法进行
+/* test cases:
+      | infix       | expr        | result |
+      |-------------|-------------|--------|
+   1. | a+b         | 4+8         | 12     |
+   2. | a+b*c       | 4+8*3       | 28     |
+   3. | a*b-c       | 4*8-3       | 29     |
+   4. | a+b*c-d     | 4+8*3-7     | 21     |
+   5. | a*b-c*d     | 4*8-3*7     | 11     |
+   6. | a*(b+c)     | 4*(8+3)     | 44     |
+   7. | (a+b)/c     | (4+8)/3     | 4      |
+   8. | (a+b)*(c-d) | (4+8)*(7-3) | 48     |
+   9. | a+b*(c-d)   | 4+8*(7-3)   | 36     |
+ */
+int main(int argc, char *argv[]) {
+    char exp[BUFSIZ / 10]; /* 表达式字符串变数    */
+    int op = 0;            /* 运算子变数         */
+    int operand1 = 0;      /* 前运算元变数       */
+    int operand2 = 0;      /* 后运算元变数       */
+    int result = 0;        /* 计算结果变数       */
+    int pos = 0;           /* 目前表达式位置     */
 
     printf("请输入中序表达式 ==> ");
-    gets(exp); /* 读取表达式 */
-    /* 剖析表达式字符串回路 */
-    while (exp[pos] != '\0' && exp[pos] != '\n') // 外循环扫描字符串归栈
+    safe_gets(exp, BUFSIZ / 10); /* 读取表达式 */
+    /* 剖析表达式字符串回路：从左到右解析，运算子和操作数分开入栈 */
+    while (exp[pos] != '\0' && exp[pos] != '\n')  // 外循环扫描字符串归栈
     {
         if (isoperator(exp[pos])) /* 是不是运算子 */
         {
-            if (!empty(stack_operator))      /* 检查运算子栈   */
-                while (priority(exp[pos]) <= /* 比较优先权回路 */
-                           priority(stack_operator->data) &&
-                       !empty(stack_operator)) // 如果优先权低，则要计算已有的运算符
-                {
+            if (!empty(stack_operator)) /* 检查运算子栈 */
+                // 如果当前运算子优先权低于或等于栈顶运算子，则优先计算已解析（入栈）的表达式
+                while (!empty(stack_operator) &&
+                       (priority(exp[pos]) <= priority(stack_operator->data))) {
                     /* 从栈取出一运算子和两运算元 */
                     stack_operator = pop(stack_operator, &op);
-                    stack_operand = pop(stack_operand, &operand1);
-                    stack_operand = pop(stack_operand, &operand2);
+                    stack_operand = pop(stack_operand, &operand1);  // right
+                    stack_operand = pop(stack_operand, &operand2);  // left
+                    printf("    [1]op=%c, op1=%d, op2=%d, calc %d%c%d\n", op,
+                           operand1, operand2, operand2, op, operand1);
                     /* 计算取出运算子和元的值后, 存入栈 */
-                    stack_operand = push(stack_operand,
-                                         get_value(op, operand1, operand2));
+                    stack_operand =
+                        push(stack_operand, get_value(op, operand1, operand2));
                 }
 
-            /* 是运算子, 存入运算子栈 */
+            /* 是运算子, 暂存入运算子栈 */
+            printf("    push operator='%c'\n", exp[pos]);
             stack_operator = push(stack_operator, exp[pos]);
+        } else {
+            /* 是运算元, 暂存入运算元栈 */
+            printf("    push operand='%c'/%d\n", exp[pos], exp[pos] - 0x30);
+            stack_operand = push(stack_operand, exp[pos] - 0x30);
         }
-        else
-            /* 是运算元, 存入运算元栈 */
-            stack_operand = push(stack_operand, exp[pos] - 48); // 这里只针对单字母ASCII值运算，对于多位数无法进行
 
         pos++; /* 下一字符串位置*/
     }
 
     /* 取出运算子栈的全部内容 */
-    while (!empty(stack_operator))
-    {
+    while (!empty(stack_operator)) {
         /* 从栈取出一运算子和两运算元 */
         stack_operator = pop(stack_operator, &op);
-        stack_operand = pop(stack_operand, &operand1);
-        stack_operand = pop(stack_operand, &operand2);
+        stack_operand = pop(stack_operand, &operand1);  // right
+        stack_operand = pop(stack_operand, &operand2);  // left
+        printf("    [2]op=%c, op1=%d, op2=%d, calc %d%c%d\n", op, operand1,
+               operand2, operand2, op, operand1);
         /* 计算取出运算子和元的值后, 存入栈 */
         stack_operand = push(stack_operand, get_value(op, operand1, operand2));
     }
-    stack_operand = pop(stack_operand, &result); /* 取出结果*/
-    printf("表达式[%s]的结果是 %d\n", exp, result);
+    /* 最终计算结果出栈 */
+    stack_operand = pop(stack_operand, &result);
+    printf("中序表达式[%s]的计算结果是 %d\n", exp, result);
 
     return 0;
 }

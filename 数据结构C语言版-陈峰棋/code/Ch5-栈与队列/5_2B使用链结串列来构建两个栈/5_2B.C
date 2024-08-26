@@ -46,7 +46,7 @@ link pop(link stack, int *value)
 
     if (stack != NULL)
     {
-        top = stack;         /* 指向栈顶端       */
+        top = stack;         /* 指向栈顶端元素    */
         stack = stack->next; /* 栈指标指向下节点  */
         *value = top->data;  /* 取出资料         */
         free(top);           /* 释回节点记忆体    */
