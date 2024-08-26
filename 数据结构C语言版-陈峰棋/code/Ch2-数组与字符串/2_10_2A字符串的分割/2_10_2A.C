@@ -3,12 +3,13 @@
 /*    字符串的分割                            */
 /* ======================================== */
 #include <stdio.h>
+#include <string.h>
 
 /* ---------------------------------------- */
-/*  分割字符串                                */
+/*  以空格符分割字符串                         */
 /* ---------------------------------------- */
-int token(char *str1, char *str2, int pos)
-{
+// char *strtok( char *str, const char *delim );
+int token(char *str1, char *str2, int pos) {
     int i, j;
 
     i = pos;               /* 从分割位置开始   */
@@ -17,31 +18,44 @@ int token(char *str1, char *str2, int pos)
     if (str1[i] != '\0') /* 是不是字符串结束   */
     {
         j = 0; /* 找下一个空白字元 */
-        while (str1[i] != '\0' && str1[i] != ' ')
-        {
+        while (str1[i] != '\0' && str1[i] != ' ') {
             str2[j] = str1[i]; /* 拷贝非空白字元 */
             i++;
             j++;
         }
         str2[j] = '\0'; /* 分割字符串结束字元 */
-        return i;       /* 传回目前位置     */
+        return i;       /* 传回目前位置      */
+    } else
+        return -1; /* 分割结束        */
+}
+
+/* ---------------------------------------- */
+/*  读取字符串，替代 gets                      */
+/* ---------------------------------------- */
+// char* gets_s( char* str, rsize_t n );
+void safe_gets(char *str, int size) {
+    char *ret = fgets(str, size, stdin);
+    if (ret) {
+        // 移除结尾的回车/换行符
+        char *posr = strchr(str, '\r');
+        if (posr) *posr = 0;
+        char *posn = strchr(str, '\n');
+        if (posn) *posn = 0;
     }
-    else
-        return -1;      /* 分割结束        */
 }
 
 /* ---------------------------------------- */
 /*  主程式                                   */
 /* ---------------------------------------- */
-int main(int argc, char *argv[])
-{
-    char string[100];      /* 字符串阵列宣告     */
-    char token_string[20]; /* 分割字符串宣告     */
-    int pos;               /* 分割位置         */
+// test case: "This is a book."
+int main(int argc, char *argv[]) {
+    char string[BUFSIZ / 10];       /* 字符串阵列宣告     */
+    char token_string[BUFSIZ / 50]; /* 分割字符串宣告     */
+    int pos;                        /* 分割位置         */
 
     printf("请输入字符串 ==> ");
-    gets(string); /* 读取字符串         */
-    pos = 0;      /* 设定分割位置初值 */
+    safe_gets(string, BUFSIZ / 10); /* 读取字符串      */
+    pos = 0;                        /* 设定分割位置初值 */
     printf("分割结果:\n");
     /* 分割字符串直到字符串结束 */
     while ((pos = token(string, token_string, pos)) != -1)

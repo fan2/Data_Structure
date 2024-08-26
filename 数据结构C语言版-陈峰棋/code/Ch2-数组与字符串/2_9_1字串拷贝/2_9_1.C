@@ -1,20 +1,19 @@
 /* ======================================== */
 /*    程式实例: 2_9_1.c                      */
-/*    字串拷贝                               */
+/*    字符串拷贝                              */
 /* ======================================== */
 #include <stdio.h>
+#include <string.h>
 
 /* ---------------------------------------- */
 /*  字串拷贝                                 */
 /* ---------------------------------------- */
 
 /* 确保接收字符串str1够长 */
-char *strcpy(char *str1, char *str2)
-{
+char *strcpy1(char *str1, char *str2) {
     int i;
 
-    for (i = 0; str2[i] != '\0'; i++)
-        str1[i] = str2[i]; /* 拷贝字串内容 */
+    for (i = 0; str2[i] != '\0'; i++) str1[i] = str2[i]; /* 拷贝字串内容 */
 
     str1[i] = '\0'; /* 设定字串结束 */
 
@@ -22,10 +21,8 @@ char *strcpy(char *str1, char *str2)
 }
 
 /* 第二种实现 */
-char *strcpy2(char *str1, char *str2)
-{
-    while ((*str1++ = *str2++))
-        ;
+char *strcpy2(char *str1, char *str2) {
+    while ((*str1++ = *str2++));
 
     /*
     while (*str2)
@@ -42,16 +39,30 @@ char *strcpy2(char *str1, char *str2)
 }
 
 /* ---------------------------------------- */
+/*  读取字符串，替代 gets                      */
+/* ---------------------------------------- */
+// char* gets_s( char* str, rsize_t n );
+void safe_gets(char *str, int size) {
+    char *ret = fgets(str, size, stdin);
+    if (ret) {
+        // 移除结尾的回车/换行符
+        char *posr = strchr(str, '\r');
+        if (posr) *posr = 0;
+        char *posn = strchr(str, '\n');
+        if (posn) *posn = 0;
+    }
+}
+
+/* ---------------------------------------- */
 /*  主程式: 读取字串後, 将它做备份.              */
 /* ---------------------------------------- */
-int main(int argc, char *argv[])
-{
-    char string[100]; /* 原始字串宣告 */
-    char backup[100]; /* 备份字串宣告 */
+int main(int argc, char *argv[]) {
+    char string[BUFSIZ / 10]; /* 原始字串宣告 */
+    char backup[BUFSIZ / 10]; /* 备份字串宣告 */
 
     printf("请输入字符串 ==> ");
-    gets(string);           /* 读取字串     */
-    strcpy(backup, string); /* 拷贝子字串   */
+    safe_gets(string, BUFSIZ / 10); /* 读取字串     */
+    strcpy1(backup, string);        /* 拷贝子字串   */
 
     printf("原始字符串 %s \n", string); /* 印出原始字串 */
     printf("备份字符串 %s \n", backup); /* 印出备份字串 */
