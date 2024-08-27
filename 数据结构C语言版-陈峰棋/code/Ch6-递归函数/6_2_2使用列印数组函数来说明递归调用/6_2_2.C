@@ -4,35 +4,32 @@
 /* ======================================== */
 #include <stdio.h>
 
-int list[6] = {1, 2, 3, 4, 5, 6}; /* 数组内容 */
+int list[6] = {1, 2, 3, 4, 5, 6};
 
 /* ---------------------------------------- */
 /*  递归数组反向列印函数                       */
 /* ---------------------------------------- */
-void invert_array(int j)
-{
-    if (j < 6) /* 终止条件     */
-    {
+void invert_array(int j) {
+    if (j < 6) {
         /* 递归链表列印函数调用 */
         invert_array(j + 1);
-        printf("[%d]", list[j]); /* 列印元素资料 */
+        printf("[%d]", list[j]);
     }
+    // else /* 隐含终止条件 */
 }
 
 /* ---------------------------------------- */
 /*  主程式: 反向列印数组内容.                   */
 /* ---------------------------------------- */
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     int i;
 
     printf("数组的内容:\n");
-    for (i = 0; i < 6; i++)
-        printf("[%d]", list[i]); /* 列印元素资料 */
-    printf("\n");                /* 换行        */
+    for (i = 0; i < 6; i++) printf("[%d]", list[i]);
+    printf("\n");
     printf("递归列印数组的内容:\n");
-    invert_array(0); /* 调用列印函数 */
-    printf("\n");    /* 换行        */
+    invert_array(0);
+    printf("\n");
 
     return 0;
 }

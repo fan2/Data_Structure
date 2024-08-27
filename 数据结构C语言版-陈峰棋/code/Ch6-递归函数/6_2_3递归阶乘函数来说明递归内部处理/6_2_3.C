@@ -7,8 +7,7 @@
 /* ---------------------------------------- */
 /*  递归阶乘函数                              */
 /* ---------------------------------------- */
-int factrial(int j)
-{
+int factrial(int j) {
     int sum = 0;  /* 阶乘总和变数     */
     int temp = 0; /* 阶乘总和暂存变数 */
 
@@ -16,17 +15,12 @@ int factrial(int j)
     {
         sum = 1;
         printf("到达终止条件(j = 0)\n");
-    }
-    else
-    {
-        printf("从函数factrial(%d)调用前的状态: sum = %d\n",
-               j, sum);
+    } else {
+        printf("从函数factrial(%d)调用前的状态: sum = %d\n", j, sum);
         temp = factrial(j - 1); /* 递归阶乘函数调用 */
-        printf("返回函数factrial(%d)后的状态: sum = %d\n",
-               j, sum);
+        printf("返回函数factrial(%d)后的状态: sum = %d\n", j, sum);
         sum = j * temp; /* 计算j!的值       */
-        printf("   ==> 在计算%d!阶乘后的状态: sum = %d\n",
-               j, sum);
+        printf("   ==> 在计算%d!阶乘后的状态: sum = %d\n", j, sum);
     }
     return sum;
 }
@@ -34,8 +28,8 @@ int factrial(int j)
 /* ---------------------------------------- */
 /*  主程式: 计算整数 4 的阶乘.                  */
 /* ---------------------------------------- */
-int main(int argc, char *argv[])
-{
-    printf("4! = %d\n", factrial(4)); /* 递归阶乘函数调用 */
+int main(int argc, char *argv[]) {
+    /* 递归阶乘函数调用 */
+    printf("4! = %d\n", factrial(4));
     return 0;
 }

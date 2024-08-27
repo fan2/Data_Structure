@@ -16,54 +16,48 @@ typedef node *link;       /* 定义新型态指标   */
 /* ---------------------------------------- */
 /*  递归链表反向列印函数                       */
 /* ---------------------------------------- */
-void print_list(link ptr)
-{
-    if (ptr != NULL) /* 终止条件         */
-    {
+void print_list(link ptr) {
+    if (ptr != NULL) {
         /* 递归链表列印函数调用 */
         print_list(ptr->next);
-        printf("[%d]", ptr->data); /* 列印节点资料     */
+        printf("[%d]", ptr->data);
     }
+    // else /* 隐含终止条件 */
 }
 
 /* ---------------------------------------- */
-/*  递归链表建立函数                        */
+/*  递归链表建立函数                           */
 /* ---------------------------------------- */
-link create_list(int *array, int len, int pos)
-{
+link create_list(int *array, int len, int pos) {
     link head; /* 链表节点的指标   */
 
-    if (pos == len) /* 终止条件         */
+    if (pos == len) /* 终止条件 */
         return NULL;
-    else
-    {
+    else {
         /* 建立节点记忆体 */
         head = (link)malloc(sizeof(node));
-        if (!head)
-            return NULL;
-        head->data = array[pos]; /* 建立节点内容     */
+        if (!head) return NULL;
+        head->data = array[pos];
         head->next = create_list(array, len, pos + 1);
         return head;
     }
 }
 
 /* ---------------------------------------- */
-/*  主程式: 建立链表后将内容印出.           */
+/*  主程式: 建立链表后将内容印出.                */
 /* ---------------------------------------- */
-int main(int argc, char *argv[])
-{
-    int list[6] = {1, 2, 3, 4, 5, 6}; /* 数组内容 */
-    link head;                        /* 指向链表开始     */
+int main(int argc, char *argv[]) {
+    int list[6] = {1, 2, 3, 4, 5, 6};
+    link head;
 
-    head = create_list(list, 6, 0);   /* 建立链表         */
-    if (!head)
-    {
+    head = create_list(list, 6, 0);
+    if (!head) {
         printf("记忆体配置失败! \n");
         exit(1);
     }
     printf("链表的内容:\n");
-    print_list(head); /* 列印链表         */
-    printf("\n");     /* 换行             */
+    print_list(head);
+    printf("\n");
 
     return 0;
 }

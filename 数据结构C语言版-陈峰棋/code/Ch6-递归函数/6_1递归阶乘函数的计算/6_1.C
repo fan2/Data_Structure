@@ -7,26 +7,23 @@
 /* ---------------------------------------- */
 /*  递归阶乘函数                              */
 /* ---------------------------------------- */
-int factorial(int j)
-{
-    int sum; /* 阶乘总和变数          */
+int factorial(int j) {
+    int sum; /* 阶乘总和变数 */
 
-    if (j == 0) /* 终止条件              */
+    if (j == 0) /* 终止条件（递归基）*/
         sum = 1;
     else
-        sum = j * factorial(j - 1); /* 递归阶乘函数调用      */
+        sum = j * factorial(j - 1);
     return sum;
 }
 
 /* ---------------------------------------- */
 /*  主程式: 计算整数0到4的阶乘.                 */
 /* ---------------------------------------- */
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     int i;
 
-    for (i = 0; i < 5; i++)
-        printf("%d! = %d\n", i, factorial(i)); /*递归阶乘函数调用*/
+    for (i = 0; i < 5; i++) printf("%d! = %d\n", i, factorial(i));
 
     return 0;
 }
