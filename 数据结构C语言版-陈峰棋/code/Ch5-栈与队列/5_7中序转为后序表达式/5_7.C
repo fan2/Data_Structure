@@ -64,7 +64,7 @@ int empty(link stack) {
 }
 
 /* ---------------------------------------- */
-/*  运算子                                   */
+/* 判断运算子（新增括号：左括号入栈，右括号匹配）   */
 /* ---------------------------------------- */
 int isoperator(char op) {
     switch (op) {
@@ -81,7 +81,7 @@ int isoperator(char op) {
 }
 
 /* ---------------------------------------- */
-/*  运算子的优先权                             */
+/* 运算子的优先权（强插左括号最低，括号内表达式最高）*/
 /* ---------------------------------------- */
 int priority(char op) {
     switch (op) {
@@ -141,42 +141,48 @@ void safe_gets(char *str, int size) {
  8. | (a+b)*(c-d)   | ab+cd-/     | (4+8)*(7-3)   | 48+73-*     |
  9. | a+b*(c-d)     | abcd-*+     | 4+8*(7-3)     | 4873-*+     |
  A. | a*b+c*(d-e)/f | ab*cde-*f/+ | 4*8+9*(7-5)/3 | 48*975-*3/+ |
-
- B. a*b+c*(d-(e+f))/g | ab*cdef+-*g/+
-    4*8+5*(9-(1+2))/3 | 48*5912+-*3/+
+ B. | a*b+c*(d*e-f)/g   | ab*cde*f-*g/+ |
+    | 4*8+9*(7*2-5)/3   | 48*972*5-*3/+ |
+ C. | a*b+c*(d-e*f)/g   | ab*cdef*-*g/+ |
+    | 4*8+9*(7-1*2)/3   | 48*9712*-*3/+ |
+ D. | a*b+c*(d-(e+f))/g | ab*cdef+-*g/+ |
+    | 4*8+5*(9-(1+2))/3 | 48*5912+-*3/+ |
  */
 int main(int argc, char *argv[]) {
     char infix[BUFSIZ / 10];  /* 中序表达式字符串      */
     char result[BUFSIZ / 10]; /* 结果表达式字符串      */
     int op = 0;               /* 运算子变数          */
-    int pos = 0;              /* 目前表达式位置      */
-    int rpos = 0;             /* 结果表达式位置      */
+    int pos = 0;              /* 目前表达式位置       */
+    int rpos = 0;             /* 结果表达式位置       */
 
     printf("请输入中序表达式 ==> ");
     safe_gets(infix, BUFSIZ / 10); /* 读取表达式 */
     while (infix[pos] != '\0' && infix[pos] != '\n') {
         if (isoperator(infix[pos])) /* 是不是运算子 */
         {
+            // 左括号强插，优先级最低，先搁置从前，入栈括号内的计算表达式
             if (empty(stack_operator) || infix[pos] == '(') {
-                /* 存入运算子至栈 */
+                /* 运算子入栈 */
                 printf("    [1]push operator='%c'\n", infix[pos]);
                 stack_operator = push(stack_operator, infix[pos]);
             } else {
                 if (infix[pos] == ')') /* 遇到闭合右括号 */
                 {
                     puts("    deal operator=')'");
+                    /* 取出运算子直到'(' */
                     while (stack_operator->data != '(') {
-                        /* 取出运算子直到是'(' */
                         stack_operator = pop(stack_operator, &op);
-                        /* 将括号内的运算子存入结果表达式 */
+                        /* 将括号内的运算子存入后序表达式 */
                         result[rpos++] = op;
                         printf("      pop operator='%c'\n", op);
                     }
-                    /* 弹出开放左括号 */
+                    /* 弹出左括号 */
                     stack_operator = pop(stack_operator, &op);
                     puts("      pop operator='('");
-                } else {
+                } else  // 普通运算子
+                {
                     // 比较当前运算子与栈顶(中)运算子优先权，弹出已入栈的高优先级运算子
+                    // 括号内的表达式可能也存在优先级问题，此处一并处理
                     while (!empty(stack_operator) &&
                            (priority(infix[pos]) <=
                             priority(stack_operator->data))) {
@@ -184,27 +190,28 @@ int main(int argc, char *argv[]) {
                         stack_operator = pop(stack_operator, &op);
                         /* 存入结果表达式 */
                         result[rpos++] = op;
-                        printf("    pop high-priority operator='%c'\n", op);
+                        printf("    pop hipri operator='%c'\n", op);
                     }
-                    /* 存入运算子至栈 */
+                    /* 处理完高优先级后，该运算子入栈 */
                     printf("    [2]push operator='%c'\n", infix[pos]);
                     stack_operator = push(stack_operator, infix[pos]);
                 }
             }
         } else {
+            /* 运算元依序存入结果表达式 */
             printf("    push operand='%c'\n", infix[pos]);
-            result[rpos++] = infix[pos]; /* 存入结果表达式 */
+            result[rpos++] = infix[pos];
         }
         pos++;
     }
 
-    while (!empty(stack_operator)) /* 取出剩下的运算子 */
-    {
+    /* 取出剩下的运算子 */
+    while (!empty(stack_operator)) {
         stack_operator = pop(stack_operator, &op); /* 取出运算子    */
         result[rpos++] = op;                       /* 存入结果表达式 */
         printf("    pop operator='%c'\n", op);
     }
-    result[rpos] = '\0'; /* 设定字符串结束   */
+    result[rpos] = '\0'; /* 设定字符串结束 */
     printf("中序表达式[%s]转换成后序表达式是[%s]\n", infix, result);
 
     return 0;

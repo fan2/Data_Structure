@@ -1,6 +1,6 @@
 /* ======================================== */
 /*    程式实例:5_6.c                         */
-/*    后序四则表达式的值                       */
+/*    后序四则表达式的值(l,r,o)                */
 /* ======================================== */
 #include <stdio.h>
 #include <stdlib.h>
@@ -115,17 +115,21 @@ void safe_gets(char *str, int size) {
 /*  主程式: 输入后序表达式后, 计算其值.          */
 /* ---------------------------------------- */
 /* test cases:
-    | infix       | postfix | expr    | result |
-    |-------------|---------|---------|--------|
- 1. | a+b         | ab+     | 48+     | 12     |
- 2. | a+b*c       | abc*+   | 483*+   | 28     |
- 3. | a*b-c       | ab*c-   | 48*3-   | 29     |
- 4. | a+b*c-d     | abc*+d- | 483*+7- | 21     |
- 5. | a*b-c*d     | ab*cd*- | 48*37*- | 11     |
- 6. | a*(b+c)     | abc+*   | 483+*   | 44     |
- 7. | (a+b)/c     | ab+c/   | 48+3/   | 4      |
- 8. | (a+b)*(c-d) | ab+cd-/ | 48+73-* | 48     |
- 9. | a+b*(c-d)   | abcd-*+ | 4873-*+ | 36     |
+    | infix             | postfix       | expr          | result |
+    |-------------------|---------------|---------------|--------|
+ 1. | a+b               | ab+           | 48+           | 12     |
+ 2. | a+b*c             | abc*+         | 483*+         | 28     |
+ 3. | a*b-c             | ab*c-         | 48*3-         | 29     |
+ 4. | a+b*c-d           | abc*+d-       | 483*+7-       | 21     |
+ 5. | a*b-c*d           | ab*cd*-       | 48*37*-       | 11     |
+ 6. | a*(b+c)           | abc+*         | 483+*         | 44     |
+ 7. | (a+b)/c           | ab+c/         | 48+3/         | 4      |
+ 8. | (a+b)*(c-d)       | ab+cd-/       | 48+73-*       | 48     |
+ 9. | a+b*(c-d)         | abcd-*+       | 4873-*+       | 36     |
+ A. | a*b+c*(d-e)/f     | ab*cde-*f/+   | 48*975-*3/+   | 38     |
+ B. | a*b+c*(d*e-f)/g   | ab*cde*f-*g/+ | 48*972*5-*3/+ | 59     |
+ C. | a*b+c*(d-e*f)/g   | ab*cdef*-*g/+ | 48*9712*-*3/+ | 47     |
+ D. | a*b+c*(d-(e+f))/g | ab*cdef+-*g/+ | 48*5912+-*3/+ | 42     |
  */
 int main(int argc, char *argv[]) {
     char exp[BUFSIZ / 10]; /* 表达式字符串变数    */
@@ -146,12 +150,12 @@ int main(int argc, char *argv[]) {
             /* 从栈取出两运算元 */
             operand = pop(operand, &operand1);  // right
             operand = pop(operand, &operand2);  // left
-            /* 计算取出运算子和元的值后, 存入栈 */
             printf("    op=%c, op1=%d, op2=%d, calc %d%c%d\n", exp[pos],
                    operand1, operand2, operand2, exp[pos], operand1);
+            /* 中间计算结果暂存入栈 */
             operand = push(operand, get_value(exp[pos], operand1, operand2));
         } else {
-            /* 是运算元, 暂存入运算元栈 */
+            /* 运算元入栈 */
             printf("    push operand='%c'/%d\n", exp[pos], exp[pos] - 0x30);
             operand = push(operand, exp[pos] - 0x30);
         }

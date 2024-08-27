@@ -1,6 +1,6 @@
 /* ======================================== */
 /*    程式实例: 5_4.c                        */
-/*    中序四则表达式的值                       */
+/*    中序四则表达式的值（ref 5_7, 支持括号处理） */
 /* ======================================== */
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,10 +65,12 @@ int empty(link stack) {
 }
 
 /* ---------------------------------------- */
-/*  是否是运算子                              */
+/* 判断运算子（新增括号：左括号入栈，右括号匹配）   */
 /* ---------------------------------------- */
 int isoperator(char op) {
     switch (op) {
+        case '(':
+        case ')':
         case '+':
         case '-':
         case '*':
@@ -81,15 +83,17 @@ int isoperator(char op) {
 }
 
 /* ---------------------------------------- */
-/*  运算子的优先权                            */
+/* 运算子的优先权（强插左括号最低，括号内表达式最高）*/
 /* ---------------------------------------- */
 int priority(char op) {
     switch (op) {
         case '*':
         case '/':
-            return 2;
+            return 3;
         case '+':
         case '-':
+            return 2;
+        case '(':
             return 1;
         default:
             return 0;
@@ -133,15 +137,22 @@ void safe_gets(char *str, int size) {
 /*  主程式: 输入中序表达式后, 计算其值.          */
 /* ---------------------------------------- */
 // 这里只针对单字母ASCII值运算，对于多位数无法进行
-// Bracket parsing is not supported
 /* test cases:
-      | infix       | expr        | result |
-      |-------------|-------------|--------|
-   1. | a+b         | 4+8         | 12     |
-   2. | a+b*c       | 4+8*3       | 28     |
-   3. | a*b-c       | 4*8-3       | 29     |
-   4. | a+b*c-d     | 4+8*3-7     | 21     |
-   5. | a*b-c*d     | 4*8-3*7     | 11     |
+      | exp               | expr              | result |
+      |-------------------|-------------------|--------|
+   1. | a+b               | 4+8               | 12     |
+   2. | a+b*c             | 4+8*3             | 28     |
+   3. | a*b-c             | 4*8-3             | 29     |
+   4. | a+b*c-d           | 4+8*3-7           | 21     |
+   5. | a*b-c*d           | 4*8-3*7           | 11     |
+   6. | a*(b+c)           | 4*(8+3)           | 44     |
+   7. | (a+b)/c           | (4+8)/3           | 4      |
+   8. | (a+b)*(c-d)       | (4+8)*(7-3)       | 48     |
+   9. | a+b*(c-d)         | 4+8*(7-3)         | 36     |
+   A. | a*b+c*(d-e)/f     | 4*8+9*(7-5)/3     | 38     |
+   B. | a*b+c*(d*e-f)/g   | 4*8+9*(7*2-5)/3   | 59     |
+   C. | a*b+c*(d-e*f)/g   | 4*8+9*(7-1*2)/3   | 47     |
+   D. | a*b+c*(d-(e+f))/g | 4*8+5*(9-(1+2))/3 | 42     |
  */
 int main(int argc, char *argv[]) {
     char exp[BUFSIZ / 10]; /* 表达式字符串变数    */
@@ -157,26 +168,56 @@ int main(int argc, char *argv[]) {
     while (exp[pos] != '\0' && exp[pos] != '\n') {
         if (isoperator(exp[pos])) /* 是不是运算子 */
         {
-            if (!empty(stack_operator)) /* 检查运算子栈 */
-                // 如果当前运算子优先权低于或等于栈顶运算子，则优先计算已解析（入栈）的表达式
-                while (!empty(stack_operator) &&
-                       (priority(exp[pos]) <= priority(stack_operator->data))) {
-                    /* 从栈取出一运算子和两运算元 */
+            // 左括号强插，优先级最低，先搁置从前，入栈括号内的计算表达式
+            if (empty(stack_operator) || exp[pos] == '(') {
+                /* 运算子入栈 */
+                printf("    [1]push operator='%c'\n", exp[pos]);
+                stack_operator = push(stack_operator, exp[pos]);
+            } else {
+                if (exp[pos] == ')') /* 遇到闭合右括号 */
+                {
+                    puts("    deal operator=')'");
+                    /* 取出运算子直到'(' */
+                    while (stack_operator->data != '(') {
+                        /* 计算括号内的表达式 */
+                        stack_operator = pop(stack_operator, &op);
+                        stack_operand = pop(stack_operand, &operand1);  // right
+                        stack_operand = pop(stack_operand, &operand2);  // left
+                        printf("      op=%c, op1=%d, op2=%d, calc %d%c%d\n", op,
+                               operand1, operand2, operand2, op, operand1);
+                        /* 中间计算结果暂存入栈 */
+                        stack_operand = push(stack_operand,
+                                             get_value(op, operand1, operand2));
+                    }
+                    /* 弹出左括号 */
                     stack_operator = pop(stack_operator, &op);
-                    stack_operand = pop(stack_operand, &operand1);  // right
-                    stack_operand = pop(stack_operand, &operand2);  // left
-                    printf("    [1]op=%c, op1=%d, op2=%d, calc %d%c%d\n", op,
-                           operand1, operand2, operand2, op, operand1);
-                    /* 中间计算结果暂存入栈 */
-                    stack_operand =
-                        push(stack_operand, get_value(op, operand1, operand2));
+                    puts("      pop operator='('");
+                } else  // 普通运算子
+                {
+                    // 比较当前运算子与栈顶(中)运算子优先权，弹出已入栈的高优先级运算子
+                    // 括号内的表达式可能也存在优先级问题，此处一并处理
+                    while (!empty(stack_operator) &&
+                           (priority(exp[pos]) <=
+                            priority(stack_operator->data))) {
+                        /* 执行高优先级计算 */
+                        stack_operator = pop(stack_operator, &op);
+                        stack_operand = pop(stack_operand, &operand1);  // right
+                        stack_operand = pop(stack_operand, &operand2);  // left
+                        printf(
+                            "    hipri op=%c, op1=%d, op2=%d, calc "
+                            "%d%c%d\n",
+                            op, operand1, operand2, operand2, op, operand1);
+                        /* 中间计算结果暂存入栈 */
+                        stack_operand = push(stack_operand,
+                                             get_value(op, operand1, operand2));
+                    }
+                    /* 处理完高优先级后，该运算子入栈 */
+                    printf("    [2]push operator='%c'\n", exp[pos]);
+                    stack_operator = push(stack_operator, exp[pos]);
                 }
-
-            /* 运算子入栈 */
-            printf("    push operator='%c'\n", exp[pos]);
-            stack_operator = push(stack_operator, exp[pos]);
+            }
         } else {
-            /* 运算元入栈 */
+            /* 运算元直接入栈 */
             printf("    push operand='%c'/%d\n", exp[pos], exp[pos] - 0x30);
             stack_operand = push(stack_operand, exp[pos] - 0x30);
         }
@@ -184,13 +225,12 @@ int main(int argc, char *argv[]) {
         pos++; /* 下一字符串位置*/
     }
 
-    /* 取出运算子栈的全部内容 */
+    /* 取出剩下的运算子，并取出对应的运算元执行计算 */
     while (!empty(stack_operator)) {
-        /* 从栈取出一运算子和两运算元 */
         stack_operator = pop(stack_operator, &op);
         stack_operand = pop(stack_operand, &operand1);  // right
         stack_operand = pop(stack_operand, &operand2);  // left
-        printf("    [2]op=%c, op1=%d, op2=%d, calc %d%c%d\n", op, operand1,
+        printf("    op=%c, op1=%d, op2=%d, calc %d%c%d\n", op, operand1,
                operand2, operand2, op, operand1);
         /* 中间计算结果暂存入栈 */
         stack_operand = push(stack_operand, get_value(op, operand1, operand2));

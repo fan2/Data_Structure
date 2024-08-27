@@ -1,6 +1,6 @@
 /* ======================================== */
 /*    程式实例: 5_5.c                        */
-/*    前序四则表达式的值                       */
+/*    前序四则表达式的值(o,l,r)                */
 /* ======================================== */
 #include <stdio.h>
 #include <stdlib.h>
@@ -115,19 +115,22 @@ void safe_gets(char *str, int size) {
 /* ---------------------------------------- */
 /*  主程式: 输入前序表达式后, 计算其值.          */
 /* ---------------------------------------- */
-/* test cases:
-    | infix       | prefix  | expr    | result |
-    |-------------|---------|---------|--------|
- 1. | a+b         | +ab     | +48     | 12     |
- 2. | a+b*c       | +a*bc   | +4*83   | 28     |
- 3. | a*b-c       | -*abc   | -*483   | 29     |
- 4. | a+b*c-d     | -+*bcad | -+*8347 | 21     |
- 5. | a*b-c*d     | -*ab*cd | -*48*37 | 11     |
- 6. | a*(b+c)     | *a+bc   | *4+83   | 44     |
- 7. | (a+b)/c     | /+abc   | /+483   | 4      |
- 8. | (a+b)*(c-d) | *+ab-cd | *+48-73 | 48     |
- 9. | a+b*(c-d)   | +a*b-cd | +4*8-73 | 36     |
- */
+// test cases:
+//     | infix             | prefix        | expr          | result |
+//     |-------------------|---------------|---------------|--------|
+//  1. | a+b               | +ab           | +48           | 12     |
+//  2. | a+b*c             | +a*bc         | +4*83         | 28     |
+//  3. | a*b-c             | -*abc         | -*483         | 29     |
+//  4. | a+b*c-d           | -+a*bcd       | -+4*837       | 21     |
+//  5. | a*b-c*d           | -*ab*cd       | -*48*37       | 11     |
+//  6. | a*(b+c)           | *a+bc         | *4+83         | 44     |
+//  7. | (a+b)/c           | /+abc         | /+483         | 4      |
+//  8. | (a+b)*(c-d)       | *+ab-cd       | *+48-73       | 48     |
+//  9. | a+b*(c-d)         | +a*b-cd       | +4*8-73       | 36     |
+//  A. | a*b+c*(d-e)/f     | +*ab/*c-def   | +*48/*9-753   | 38     |
+//  B. | a*b+c*(d*e-f)/g   | +*ab/*c-*defg | +*48/*9-*7253 | 59     |
+//  C. | a*b+c*(d-e*f)/g   | +*ab/*c-d*efg | +*48/*9-7*123 | 47     |
+//  D. | a*b+c*(d-(e+f))/g | +*ab/*c-d+efg | +*48/*5-9+123 | 42     |
 int main(int argc, char *argv[]) {
     char exp[BUFSIZ / 10]; /* 表达式字符串变数    */
     int operand1 = 0;      /* 前运算元变数       */
@@ -142,7 +145,7 @@ int main(int argc, char *argv[]) {
     /* 将前序表达式入栈：op, left, right */
     while (exp[pos] != '\0' && exp[pos] != '\n') {
         prefix = push(prefix, exp[pos]);  // ASCII of char
-        pos++;                            /* 下一字符串位置       */
+        pos++;                            /* 下一字符串位置 */
     }
 
     /* 前序表达式出栈解析：right, left, op */
@@ -159,7 +162,7 @@ int main(int argc, char *argv[]) {
             /* 将计算结果存入栈 */
             operand = push(operand, get_value(token, operand2, operand1));
         } else {
-            /* 是运算元, 存入运算元栈 */
+            /* 运算元入栈 */
             printf("    push operand='%c'/%d\n", token, token - 0x30);
             operand = push(operand, token - 0x30);
         }
