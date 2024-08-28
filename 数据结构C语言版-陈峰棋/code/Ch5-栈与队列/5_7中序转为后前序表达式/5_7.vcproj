@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="5_7中序转为后序表达式"
+	Name="5_7中序转为后前序表达式"
 	ProjectGUID="{286AC10A-0672-4BF4-8C25-C3019B9A3D22}"
 	RootNamespace="My5_7"
 	Keyword="Win32Proj"

@@ -1,6 +1,6 @@
 /* ======================================== */
-/*    程式实例: 5_4.c                        */
-/*    中序四则表达式的值（ref 5_7, 支持括号处理） */
+/*    程式实例: 5_4_2.c                      */
+/*    中序四则表达式的值（参考 5_7, 增加括号处理） */
 /* ======================================== */
 #include <stdio.h>
 #include <stdlib.h>
@@ -168,13 +168,13 @@ int main(int argc, char *argv[]) {
     while (exp[pos] != '\0' && exp[pos] != '\n') {
         if (isoperator(exp[pos])) /* 是不是运算子 */
         {
-            // 左括号强插，优先级最低，先搁置从前，入栈括号内的计算表达式
+            // 左括号强插，先搁置已入栈运算子
             if (empty(stack_operator) || exp[pos] == '(') {
                 /* 运算子入栈 */
                 printf("    [1]push operator='%c'\n", exp[pos]);
                 stack_operator = push(stack_operator, exp[pos]);
             } else {
-                if (exp[pos] == ')') /* 遇到闭合右括号 */
+                if (exp[pos] == ')') // 先计算括号内的子表达式
                 {
                     puts("    deal operator=')'");
                     /* 取出运算子直到'(' */
@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
                         stack_operator = pop(stack_operator, &op);
                         stack_operand = pop(stack_operand, &operand1);  // right
                         stack_operand = pop(stack_operand, &operand2);  // left
-                        printf("      op=%c, op1=%d, op2=%d, calc %d%c%d\n", op,
+                        printf("      pop=%c,%d,%d, calc %d%c%d\n", op,
                                operand1, operand2, operand2, op, operand1);
                         /* 中间计算结果暂存入栈 */
                         stack_operand = push(stack_operand,
@@ -194,8 +194,9 @@ int main(int argc, char *argv[]) {
                     puts("      pop operator='('");
                 } else  // 普通运算子
                 {
-                    // 比较当前运算子与栈顶(中)运算子优先权，弹出已入栈的高优先级运算子
+                    // 待闭合左括号优先级最低，入栈括号内的表达式
                     // 括号内的表达式可能也存在优先级问题，此处一并处理
+                    // 比较当前运算子与栈顶(中)运算子优先权，弹出已入栈的高优先级运算子
                     while (!empty(stack_operator) &&
                            (priority(exp[pos]) <=
                             priority(stack_operator->data))) {
@@ -217,7 +218,7 @@ int main(int argc, char *argv[]) {
                 }
             }
         } else {
-            /* 运算元直接入栈 */
+            /* 运算元直接入栈: left, right */
             printf("    push operand='%c'/%d\n", exp[pos], exp[pos] - 0x30);
             stack_operand = push(stack_operand, exp[pos] - 0x30);
         }
@@ -230,7 +231,7 @@ int main(int argc, char *argv[]) {
         stack_operator = pop(stack_operator, &op);
         stack_operand = pop(stack_operand, &operand1);  // right
         stack_operand = pop(stack_operand, &operand2);  // left
-        printf("    op=%c, op1=%d, op2=%d, calc %d%c%d\n", op, operand1,
+        printf("    pop=%c,%d,%d, calc %d%c%d\n", op, operand1,
                operand2, operand2, op, operand1);
         /* 中间计算结果暂存入栈 */
         stack_operand = push(stack_operand, get_value(op, operand1, operand2));

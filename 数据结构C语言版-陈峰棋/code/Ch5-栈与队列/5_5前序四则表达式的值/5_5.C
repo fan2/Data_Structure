@@ -2,6 +2,17 @@
 /*    程式实例: 5_5.c                        */
 /*    前序四则表达式的值(o,l,r)                */
 /* ======================================== */
+/*
+ * 由中序转前序表达式时（5_7_2），最先应被计算的运算子被压栈(底)在最右侧，操作数顺序与中序一致。
+ * 解析前序表达式时，以运算符作为核心，其执行运算的顺序与左右视觉顺序刚好相反。
+ *
+ * 前序表达式不涉及括号和优先级，无需运算符栈（比较优先级），只需一个操作数栈。
+ *
+ * 从右向左扫描(o,l,r)，解析操作数 r,l 入栈，取到运算子时，弹出两操作数执行计算 o(l,r)，
+ * 将计算中间结果作为新的操作数入栈，扫描到下一个运算子时再取出作为操作数参与运算。
+ *
+ * 将前序表达式从左到右入栈再出栈，即可等效实现对前序表达式的“从右向左扫描”。
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -65,7 +76,7 @@ int empty(link stack) {
 }
 
 /* ---------------------------------------- */
-/*  是否是运算子                              */
+/*  是否是运算子（只涉及两级）                   */
 /* ---------------------------------------- */
 int isoperator(char op) {
     switch (op) {
@@ -152,17 +163,16 @@ int main(int argc, char *argv[]) {
     // 操作数先入栈，碰到运算符就计算，将中间计算结果入栈
     while (!empty(prefix)) {
         prefix = pop(prefix, &token); /* 取出一元素        */
-        if (isoperator(token))        /* 是不是运算子       */
+        if (isoperator(token))        /* 是不是运算子      */
         {
-            /* 从栈取出两运算元 */
-            operand = pop(operand, &operand1);  // left
-            operand = pop(operand, &operand2);  // right
-            printf("    op=%c, op1=%d, op2=%d, calc %d%c%d\n", token, operand1,
-                   operand2, operand1, token, operand2);
-            /* 将计算结果存入栈 */
+            /* 从栈弹出两运算元: left, right */
+            operand = pop(operand, &operand1);
+            operand = pop(operand, &operand2);
+            printf("    pop and calc %d%c%d\n", operand1, token, operand2);
+            /* 将中间计算结果存入栈 */
             operand = push(operand, get_value(token, operand2, operand1));
         } else {
-            /* 运算元入栈 */
+            /* 运算元入栈: right, left */
             printf("    push operand='%c'/%d\n", token, token - 0x30);
             operand = push(operand, token - 0x30);
         }

@@ -1,6 +1,6 @@
 /* ======================================== */
-/*    程式实例: 5_4.c                        */
-/*    中序四则表达式的值                       */
+/*    程式实例: 5_4_1.c                      */
+/*    中序四则表达式的值（不支持括号处理）        */
 /* ======================================== */
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,7 +65,7 @@ int empty(link stack) {
 }
 
 /* ---------------------------------------- */
-/*  是否是运算子                              */
+/*  是否是运算子（只涉及两级）                   */
 /* ---------------------------------------- */
 int isoperator(char op) {
     switch (op) {
@@ -161,11 +161,11 @@ int main(int argc, char *argv[]) {
                 // 如果当前运算子优先权低于或等于栈顶运算子，则优先计算已解析（入栈）的表达式
                 while (!empty(stack_operator) &&
                        (priority(exp[pos]) <= priority(stack_operator->data))) {
-                    /* 从栈取出一运算子和两运算元 */
+                    /* 从栈取出一运算子和两运算元: right, left */
                     stack_operator = pop(stack_operator, &op);
-                    stack_operand = pop(stack_operand, &operand1);  // right
-                    stack_operand = pop(stack_operand, &operand2);  // left
-                    printf("    [1]op=%c, op1=%d, op2=%d, calc %d%c%d\n", op,
+                    stack_operand = pop(stack_operand, &operand1);
+                    stack_operand = pop(stack_operand, &operand2);
+                    printf("    [1]pop %c,%d,%d, calc %d%c%d\n", op,
                            operand1, operand2, operand2, op, operand1);
                     /* 中间计算结果暂存入栈 */
                     stack_operand =
@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
             printf("    push operator='%c'\n", exp[pos]);
             stack_operator = push(stack_operator, exp[pos]);
         } else {
-            /* 运算元入栈 */
+            /* 运算元入栈: left, right */
             printf("    push operand='%c'/%d\n", exp[pos], exp[pos] - 0x30);
             stack_operand = push(stack_operand, exp[pos] - 0x30);
         }
@@ -190,7 +190,7 @@ int main(int argc, char *argv[]) {
         stack_operator = pop(stack_operator, &op);
         stack_operand = pop(stack_operand, &operand1);  // right
         stack_operand = pop(stack_operand, &operand2);  // left
-        printf("    [2]op=%c, op1=%d, op2=%d, calc %d%c%d\n", op, operand1,
+        printf("    [2]pop=%c,%d,%d, calc %d%c%d\n", op, operand1,
                operand2, operand2, op, operand1);
         /* 中间计算结果暂存入栈 */
         stack_operand = push(stack_operand, get_value(op, operand1, operand2));

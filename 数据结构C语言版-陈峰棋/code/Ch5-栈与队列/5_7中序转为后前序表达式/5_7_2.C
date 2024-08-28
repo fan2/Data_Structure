@@ -1,7 +1,25 @@
 /* ======================================== */
-/*    程式实例: 5_7.c                        */
-/*    中序转为前序表达式                       */
+/*    程式实例: 5_7_2.c                      */
+/*    中序转前序: (l,o,r) -> (o,l,r)         */
 /* ======================================== */
+/*
+1.
+事实上前序和后序表达式的计算比起中序表达式的计算还要简单，如果能够将中序表达式转换成前序或后序表达式，
+    就可以生成更容易处理的表达式，其实前序和后序表达式才是计算机最容易处理的表达式。
+2.
+中序表达式转换成前序表达式的方法只需将中序表达式计算的步骤稍加修饰，同时加入括号处理的功能。
+    两个表达式的操作数排列顺序完全相同，运算符的排列不同（高优先级最先前置在右），需要借助两个辅助栈，
+    中间表达式从后往前拼接。而运算符的处理和中序表达式的计算相同。
+3.
+括号的处理是在遇到左括号时，将之存入运算符栈，等到导入的是右括号时，才从运算符栈取出运算符后输出，
+    重复上述操作直到再度遇到左括号。
+*/
+/*
+ * (a+b)*(c-d):
+ * 1. +ab
+ * 2. -cd
+ * 3. *+ab-cd
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -122,18 +140,6 @@ void safe_gets(char *str, int size) {
 /* ---------------------------------------- */
 /*  主程式: 输入中序表达式后, 转成前序.           */
 /* ---------------------------------------- */
-/*
-1.
-事实上前序和前序表达式的计算比起中序表达式的计算还要简单，如果能够将中序表达式转换成前序或前序表达式，
-    就可以生成更容易处理的表达式，其实前序和前序表达式才是计算机最容易处理的表达式。
-2.
-中序表达式转换成前序表达式的方法只需将中序表达式计算的步骤稍加修饰，同时加入括号处理的功能。
-    两个表达式的操作数排列顺序完全相同，只有运算符的排列不同，所以中序表达式在转换时不需要操作数栈，
-    只需在导入任何操作数后马上输出。而运算符的处理和中序表达式的计算相同。
-3.
-括号的处理是在遇到左括号时，将之存入运算符栈，等到导入的是右括号时，才从运算符栈取出运算符后输出，
-    重复上述操作直到再度遇到左括号。
-*/
 // test cases:
 //     | infix             | prefix        | expr              | result        |
 //     |-------------------|---------------|-------------------|---------------|
@@ -163,14 +169,14 @@ int main(int argc, char *argv[]) {
     while (infix[pos] != '\0' && infix[pos] != '\n') {
         if (isoperator(infix[pos])) /* 是不是运算子 */
         {
-            // 左括号强插，优先级最低，先搁置从前，入栈括号内的计算表达式
+            // 左括号强插，先搁置已入栈运算子
             if (empty(stack_operator) || infix[pos] == '(') {
                 /* 运算子入栈 */
                 printf("    [1]push operator='%c'\n", infix[pos]);
                 op[0] = infix[pos];
                 stack_operator = push(stack_operator, op);
             } else {
-                if (infix[pos] == ')') /* 遇到闭合右括号 */
+                if (infix[pos] == ')') // 先拼接括号内的子表达式
                 {
                     puts("    deal operator=')'");
                     /* 取出运算子直到'(' */
@@ -192,12 +198,13 @@ int main(int argc, char *argv[]) {
                     puts("      pop operator='('");
                 } else  // 普通运算子
                 {
-                    // 比较当前运算子与栈顶(中)运算子优先权，弹出已入栈的高优先级运算子
+                    // 待闭合左括号优先级最低，入栈括号内的表达式
                     // 括号内的表达式可能也存在优先级问题，此处一并处理
+                    // 比较当前运算子与栈顶(中)运算子优先权，弹出已入栈的高优先级运算子
                     while (!empty(stack_operator) &&
                            (priority(infix[pos]) <=
                             priority(stack_operator->data[0]))) {
-                        /* 取出运算子 */
+                        /* 执行高优先级计算(拼接表达式) */
                         stack_operator = pop(stack_operator, op);
                         stack_operand = pop(stack_operand, op1);  // right
                         stack_operand = pop(stack_operand, op2);  // left
@@ -225,7 +232,7 @@ int main(int argc, char *argv[]) {
         pos++;
     }
 
-    /* 取出剩下的运算子 */
+    /* 取出剩下的运算子，并取出对应的运算元执行计算(拼接表达式) */
     while (!empty(stack_operator)) {
         stack_operator = pop(stack_operator, op);
         stack_operand = pop(stack_operand, op1);  // right
@@ -239,7 +246,7 @@ int main(int argc, char *argv[]) {
         stack_operand = push(stack_operand, exp);
         printf("    exp=%s\n", exp);
     }
-    /* 最终计算结果出栈 */
+    /* 最终拼接完成的表达式出栈 */
     stack_operand = pop(stack_operand, exp);
     printf("中序表达式[%s]转换成前序表达式是[%s]\n", infix, exp);
 

@@ -2,6 +2,15 @@
 /*    程式实例:5_6.c                         */
 /*    后序四则表达式的值(l,r,o)                */
 /* ======================================== */
+/*
+ * 由中序转后序表达式时（5_7_1），最先应被计算的运算子在最左侧，操作数顺序与中序一致。
+ * 解析后序表达式时，以运算符作为核心，其执行运算的顺序与左右视觉顺序刚好一致。
+ *
+ * 后序表达式不涉及括号和优先级，无需运算符栈（比较优先级），只需一个操作数栈。
+ *
+ * 解析顺序同中序，从左向右扫描，操作数 l,r 入栈，读到运算子时，取两操作数执行计算 o(r,l)
+ * 将计算中间结果作为新的操作数入栈，扫描到下一个运算子时再取出作为操作数参与运算。
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -64,7 +73,7 @@ int empty(link stack) {
 }
 
 /* ---------------------------------------- */
-/*  是否是运算子                              */
+/*  是否是运算子（只涉及两级）                   */
 /* ---------------------------------------- */
 int isoperator(char op) {
     switch (op) {
@@ -79,7 +88,7 @@ int isoperator(char op) {
 }
 
 /* ---------------------------------------- */
-/*  计算二元表达式的值                         */
+/*  计算二元表达式的值(op, right, left)        */
 /* ---------------------------------------- */
 int get_value(int op, int operand1, int operand2) {
     switch ((char)op) {
@@ -124,7 +133,7 @@ void safe_gets(char *str, int size) {
  5. | a*b-c*d           | ab*cd*-       | 48*37*-       | 11     |
  6. | a*(b+c)           | abc+*         | 483+*         | 44     |
  7. | (a+b)/c           | ab+c/         | 48+3/         | 4      |
- 8. | (a+b)*(c-d)       | ab+cd-/       | 48+73-*       | 48     |
+ 8. | (a+b)*(c-d)       | ab+cd-*       | 48+73-*       | 48     |
  9. | a+b*(c-d)         | abcd-*+       | 4873-*+       | 36     |
  A. | a*b+c*(d-e)/f     | ab*cde-*f/+   | 48*975-*3/+   | 38     |
  B. | a*b+c*(d*e-f)/g   | ab*cde*f-*g/+ | 48*972*5-*3/+ | 59     |
@@ -141,21 +150,21 @@ int main(int argc, char *argv[]) {
     printf("请输入后序表达式 ==> ");
     safe_gets(exp, BUFSIZ / 10); /* 读取表达式 */
 
-    // 省去了前序表达式的入栈部分
+    // 省去了前序表达式入栈倒装逆序出栈（实现从右到左扫描）
 
-    /* 剖析表达式字符串回路 */
+    /* 从左到右顺序剖析表达式字符串回路 */
     while (exp[pos] != '\0' && exp[pos] != '\n') {
         if (isoperator(exp[pos])) /* 是不是运算子 */
         {
-            /* 从栈取出两运算元 */
-            operand = pop(operand, &operand1);  // right
-            operand = pop(operand, &operand2);  // left
-            printf("    op=%c, op1=%d, op2=%d, calc %d%c%d\n", exp[pos],
-                   operand1, operand2, operand2, exp[pos], operand1);
-            /* 中间计算结果暂存入栈 */
+            /* 从栈弹出两运算元: right, left */
+            operand = pop(operand, &operand1);
+            operand = pop(operand, &operand2);
+            printf("    op=%c, pop(%d, %d), calc %d%c%d\n", exp[pos], operand1,
+                   operand2, operand2, exp[pos], operand1);
+            /* 将中间计算结果暂存入栈 */
             operand = push(operand, get_value(exp[pos], operand1, operand2));
         } else {
-            /* 运算元入栈 */
+            /* 运算元入栈: left, right */
             printf("    push operand='%c'/%d\n", exp[pos], exp[pos] - 0x30);
             operand = push(operand, exp[pos] - 0x30);
         }
