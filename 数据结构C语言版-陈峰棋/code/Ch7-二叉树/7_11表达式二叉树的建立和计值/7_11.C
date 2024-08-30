@@ -15,18 +15,20 @@ typedef struct tree treenode; /* 树的结构新型态     */
 typedef treenode *btree;      /* 宣告树节点指标型态  */
 
 /* ---------------------------------------- */
-/*  建立表达式二叉树                           */
+/*  建立二叉树（详细创建日志跟踪参考 7_5）        */
 /* ---------------------------------------- */
-btree createbtree(int *data, int pos)
-{
+btree createbtree(int *data, int pos) {
     btree newnode; /* 新节点指标         */
 
-    if (data[pos] == 0 || pos > 7) /* 终止条件       */
+    if (pos > 7 || data[pos] == 0) /* 终止条件       */
         return NULL;
-    else
-    {
+    else {
         /* 建立新节点记忆体 */
         newnode = (btree)malloc(sizeof(treenode));
+        if (!newnode) {
+            printf("createbtree malloc node for pos[%d] failed!\n", pos);
+            exit(EXIT_FAILURE);  // 终止程序
+        }
         newnode->data = data[pos]; /* 建立节点内容       */
         /* 建立左子树的递归呼叫 */
         newnode->left = createbtree(data, 2 * pos);
@@ -39,8 +41,7 @@ btree createbtree(int *data, int pos)
 /* ---------------------------------------- */
 /*  表达式二叉树中序列印                       */
 /* ---------------------------------------- */
-void inorder(btree ptr)
-{
+void inorder(btree ptr) {
     if (ptr != NULL) /* 终止条件           */
     {
         inorder(ptr->left);      /* 左子树            */
@@ -52,8 +53,7 @@ void inorder(btree ptr)
 /* ---------------------------------------- */
 /*  表达式二叉树前序列印                        */
 /* ---------------------------------------- */
-void preorder(btree ptr)
-{
+void preorder(btree ptr) {
     if (ptr != NULL) /* 终止条件           */
     {
         printf("%c", ptr->data); /* 列印节点内容       */
@@ -65,8 +65,7 @@ void preorder(btree ptr)
 /* ---------------------------------------- */
 /*  表达式二叉树后序列印                        */
 /* ---------------------------------------- */
-void postorder(btree ptr)
-{
+void postorder(btree ptr) {
     if (ptr != NULL) /* 终止条件           */
     {
         postorder(ptr->left);    /* 左子树            */
@@ -80,17 +79,16 @@ int getvalue(int op, int operand1, int operand2);
 /* ---------------------------------------- */
 /*  表达式二叉树后序计值                       */
 /* ---------------------------------------- */
-int cal(btree ptr)
-{
+int cal(btree ptr) {
     int operand1 = 0; /* 前运算元变数       */
     int operand2 = 0; /* 后运算元变数       */
 
     /* 终止条件 */
     if (ptr->left == NULL && ptr->right == NULL)
-        return ptr->data - 48;
+        return ptr->data - 0x30;
     {
-        operand1 = cal(ptr->left);  /* 左子树             */
-        operand2 = cal(ptr->right); /* 右子树             */
+        operand1 = cal(ptr->left);  /* 左子树 */
+        operand2 = cal(ptr->right); /* 右子树 */
         return getvalue(ptr->data, operand1, operand2);
     }
 }
@@ -98,34 +96,35 @@ int cal(btree ptr)
 /* ---------------------------------------- */
 /*  计算二叉表达式的值                         */
 /* ---------------------------------------- */
-int getvalue(int op, int operand1, int operand2)
-{
-    switch ((char)op)
-    {
-    case '*':
-        return (operand2 * operand1);
-    case '/':
-        return (operand2 / operand1);
-    case '+':
-        return (operand2 + operand1);
-    case '-':
-        return (operand2 - operand1);
+int getvalue(int op, int operand1, int operand2) {
+    switch ((char)op) {
+        case '*':
+            return (operand2 * operand1);
+        case '/':
+            return (operand2 / operand1);
+        case '+':
+            return (operand2 + operand1);
+        case '-':
+            return (operand2 - operand1);
     }
 
-    return -1; // should not reach here
+    return -1;  // should not reach here
 }
 
 /* ---------------------------------------- */
 /*  主程式: 建立表达式二叉树后计算结果.           */
 /* ---------------------------------------- */
-int main(int argc, char *argv[])
-{
+/*
+            +
+        *       *
+      5   6   4   3
+*/
+int main(int argc, char *argv[]) {
     btree root = NULL; /* 表达式二叉树指标   */
     int result;        /* 结果变数          */
 
-    /* 表达式二叉树节点数据 */
-    int data[8] = {' ', '+', '*', '*', '5',
-                   '6', '4', '3'};
+    /* 表达式二叉树节点数据: 数组表示法 */
+    int data[8] = {' ', '+', '*', '*', '5', '6', '4', '3'};
     root = createbtree(data, 1); /* 建立表达式二叉树   */
     printf("中序表达式: ");
     inorder(root); /* 中序列印二叉树     */

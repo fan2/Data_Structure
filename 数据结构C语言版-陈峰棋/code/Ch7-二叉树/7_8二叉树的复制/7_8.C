@@ -15,18 +15,20 @@ typedef struct tree treenode; /* 树的结构新型态    */
 typedef treenode *btree;      /* 宣告树节点指标型态 */
 
 /* ---------------------------------------- */
-/*  建立二叉树                                */
+/*  建立二叉树（详细创建日志跟踪参考 7_5）        */
 /* ---------------------------------------- */
-btree createbtree(int *data, int pos)
-{
+btree createbtree(int *data, int pos) {
     btree newnode; /* 新节点指标         */
 
-    if (data[pos] == 0 || pos > 15) /* 终止条件       */
+    if (pos > 15 || data[pos] == 0) /* 终止条件       */
         return NULL;
-    else
-    {
+    else {
         /* 建立新节点记忆体 */
         newnode = (btree)malloc(sizeof(treenode));
+        if (!newnode) {
+            printf("createbtree malloc node for pos[%d] failed!\n", pos);
+            exit(EXIT_FAILURE);  // 终止程序
+        }
         newnode->data = data[pos]; /* 建立节点内容       */
         /* 建立左子树的递归呼叫 */
         newnode->left = createbtree(data, 2 * pos);
@@ -39,16 +41,18 @@ btree createbtree(int *data, int pos)
 /* ---------------------------------------- */
 /*  二叉树复制                                */
 /* ---------------------------------------- */
-btree copybtree(btree root)
-{
+btree copybtree(btree root) {
     btree newnode; /* 新节点指标         */
 
     if (root == NULL) /* 终止条件           */
         return NULL;
-    else
-    {
+    else {
         /* 建立新节点记忆体 */
         newnode = (btree)malloc(sizeof(treenode));
+        if (!newnode) {
+            puts("copybtree malloc node failed!");
+            exit(EXIT_FAILURE);  // 终止程序
+        }
         newnode->data = root->data; /* 建立节点内容       */
         /* 拷贝左子树 */
         newnode->left = copybtree(root->left);
@@ -61,8 +65,7 @@ btree copybtree(btree root)
 /* ---------------------------------------- */
 /*  二叉树中序列印                          */
 /* ---------------------------------------- */
-void printbtree(btree ptr)
-{
+void printbtree(btree ptr) {
     if (ptr != NULL) /* 终止条件           */
     {
         printbtree(ptr->left);      /* 左子树            */
@@ -74,21 +77,19 @@ void printbtree(btree ptr)
 /* ---------------------------------------- */
 /*  主程式: 建立二叉树后备份它.                 */
 /* ---------------------------------------- */
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     btree root = NULL;   /* 原二叉树指标       */
     btree backup = NULL; /* 复制二叉树指标     */
 
     /* 二叉树节点数据 */
-    int data[16] = {0, 5, 4, 6, 2, 0, 0, 8, 1,
-                    3, 0, 0, 0, 0, 7, 9};
+    int data[16] = {0, 5, 4, 6, 2, 0, 0, 8, 1, 3, 0, 0, 0, 0, 7, 9};
     root = createbtree(data, 1); /* 建立树状结构       */
     backup = copybtree(root);    /* 复制二叉树         */
     printf("原二叉树的节点内容 \n");
     printbtree(root); /* 中序列印二叉树     */
     printf("\n备份二叉树的节点内容 \n");
     printbtree(backup); /* 中序列印二叉树     */
-    printf("\n");       /* 换行               */
+    printf("\n");
 
     return 0;
 }

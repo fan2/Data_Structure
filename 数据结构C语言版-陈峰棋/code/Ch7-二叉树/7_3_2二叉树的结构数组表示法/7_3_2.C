@@ -17,8 +17,7 @@ treenode btree[15];           /* 宣告树的结构数组   */
 /* ---------------------------------------- */
 /*  建立二叉树                                */
 /* ---------------------------------------- */
-void createbtree(int *data, int len)
-{
+void createbtree(int *data, int len) {
     int level; /* 树的阶层          */
     int pos;   /* -1是左树,1是右树   */
     int i;
@@ -28,7 +27,7 @@ void createbtree(int *data, int len)
     {
         btree[i].data = data[i]; /* 建立节点内容       */
         level = 0;               /* 从树根开始         */
-        pos = 0;                 /* 设定pos值         */
+        pos = 0;                 /* 设定pos值：尚未找到 */
         while (pos == 0)         /* 用回路找节点位置    */
         {
             /* 比较是左或右子树 */
@@ -62,8 +61,7 @@ void createbtree(int *data, int len)
       2       8
     1   3   7   9
 */
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     /* 二叉树节点数据 */
     int data[10] = {5, 6, 4, 8, 2, 3, 7, 1, 9};
     int i;
@@ -79,8 +77,8 @@ int main(int argc, char *argv[])
     printf("----------------- \n");
     for (i = 0; i < 15; i++)    /* 列出二叉树内容     */
         if (btree[i].data != 0) /* 是否是树的节点     */
-            printf("%2d:[%2d] [%2d] [%2d]\n", i, btree[i].left,
-                   btree[i].data, btree[i].right);
+            printf("%2d:[%2d] [%2d] [%2d]\n", i, btree[i].left, btree[i].data,
+                   btree[i].right);
 
     return 0;
 }

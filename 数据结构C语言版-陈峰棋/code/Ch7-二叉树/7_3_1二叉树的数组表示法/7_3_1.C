@@ -2,17 +2,29 @@
 /*    程式实例: 7_3_1.c                      */
 /*    二叉树的数组表示法                       */
 /* ======================================== */
+/*
+4 层满二叉树节点数为 2^4-1=15，数组索引（位置）分布如下：
+
+                           (1)
+                (2)                   (3)
+           (4)       (5)         (6)        (7)
+         (8) (9)  (10) (11)   (12) (13)  (14) (15)
+
+1. 左子树的索引是父节点索引乘以 2：left=2*parent
+2. 右子树的索引是父节点索引乘以 2+1：right=2*parent+1
+*/
+
 #include <stdio.h>
 
 /* ---------------------------------------- */
 /*  建立二叉树                                */
 /* ---------------------------------------- */
-void createbtree(int *btree, int *data, int len)
-{
+void createbtree(int *btree, int *data, int len) {
     int level; /* 树的阶层           */
     int i;
 
-    btree[1] = data[1];        /* 建立根节点       */
+    btree[1] = data[1]; /* 建立根节点       */
+    printf("btree[1] = %d\n", data[1]);
     for (i = 2; i <= len; i++) /* 用回路建立其它节点 */
     {
         level = 1;                /* 从阶层1开始        */
@@ -23,7 +35,9 @@ void createbtree(int *btree, int *data, int len)
             else
                 level = level * 2; /* 左子树            */
         }
-        btree[level] = data[i];    /* 存入节点数据       */
+        // btree[level]==0，该位置空，则挂接上
+        btree[level] = data[i]; /* 存入节点数据       */
+        printf("btree[%d] = %d\n", level, data[i]);
     }
 }
 
@@ -31,13 +45,12 @@ void createbtree(int *btree, int *data, int len)
 /*  主程式: 建立数组的二叉树.                   */
 /* ---------------------------------------- */
 /*
-          5
-        4   6
-      2       8
-    1   3   7   9
+                5(1)
+         4(2)         6(3)
+     2(4)                 8(7)
+ 1(8)    3(9)        7(14)    9(15)
 */
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     int btree[16]; /* 二叉树数组         */
     /* 二叉树节点数据 */
     int data[10] = {0, 5, 6, 4, 8, 2, 3, 7, 1, 9};
@@ -46,8 +59,9 @@ int main(int argc, char *argv[])
     for (i = 1; i < 16; i++) /* 清除二叉树数组     */
         btree[i] = 0;
     createbtree(btree, data, 9); /* 建立二叉树         */
-    for (i = 1; i < 16; i++)     /* 列出二叉树内容     */
-        printf("%2d: [%d] \n", i, btree[i]);
+    puts("二叉树的数组表示：索引:节点(0表示空)");
+    for (i = 1; i < 16; i++) /* 列出二叉树内容     */
+        printf("[%2d]: %d\n", i, btree[i]);
 
     return 0;
 }

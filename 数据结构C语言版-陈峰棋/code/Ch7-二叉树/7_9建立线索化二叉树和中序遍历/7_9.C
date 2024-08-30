@@ -19,9 +19,7 @@ typedef treenode *t_btree;      /* 宣告树节点指标型态  */
 /* ---------------------------------------- */
 /*  插入线索化二叉树的节点                      */
 /* ---------------------------------------- */
-t_btree insertnode(t_btree root, int value)
-{
-
+t_btree insertnode(t_btree root, int value) {
     t_btree newnode;  /* 新节点指标         */
     t_btree current;  /* 目前树节点指标      */
     t_btree parent;   /* 父节点指标         */
@@ -30,6 +28,10 @@ t_btree insertnode(t_btree root, int value)
 
     /* 建立新节点记忆体 */
     newnode = (t_btree)malloc(sizeof(treenode));
+    if (!newnode) {
+        printf("insertnode malloc node[%d] failed!\n", value);
+        exit(EXIT_FAILURE);  // 终止程序
+    }
     newnode->data = value;    /* 建立节点内容       */
     newnode->left = NULL;     /* 设定指标初值       */
     newnode->right = NULL;    /* 设定指标初值       */
@@ -59,9 +61,7 @@ t_btree insertnode(t_btree root, int value)
                 current = current->left;  /* 左子树       */
             else
                 current = NULL; /* 是线索化             */
-        }
-        else
-        {
+        } else {
             if (pos != 1) /* 走向不同           */
             {
                 pos = 1;           /* 记录新走向        */
@@ -80,9 +80,7 @@ t_btree insertnode(t_btree root, int value)
         parent->left = newnode;   /* 是左子树           */
         newnode->left = previous; /* 指标指向previous   */
         newnode->right = parent;  /* 指标指向parent     */
-    }
-    else
-    {
+    } else {
         parent->rightthread = 0;   /* 不是线索化          */
         parent->right = newnode;   /* 是右子树           */
         newnode->left = parent;    /* 指标指向parent     */
@@ -94,13 +92,16 @@ t_btree insertnode(t_btree root, int value)
 /* ---------------------------------------- */
 /*  建立线索化二叉树                           */
 /* ---------------------------------------- */
-t_btree createtbtree(int *data, int len)
-{
+t_btree createtbtree(int *data, int len) {
     t_btree root = NULL; /* 树根指标           */
     int i;
 
     /* 建立线索化二叉树的开头节点记忆体 */
     root = (t_btree)malloc(sizeof(treenode));
+    if (!root) {
+        puts("createbtree malloc node failed!");
+        exit(EXIT_FAILURE);  // 终止程序
+    }
     root->left = root;     /* 设定指标初值       */
     root->right = NULL;    /* 设定指标初值       */
     root->leftthread = 1;  /* 是线索化          */
@@ -114,8 +115,7 @@ t_btree createtbtree(int *data, int len)
 /* ---------------------------------------- */
 /*  线索化二叉树中序遍历列印                    */
 /* ---------------------------------------- */
-void printtbtree(t_btree root)
-{
+void printtbtree(t_btree root) {
     t_btree ptr;
 
     ptr = root; /* 指向开头节点       */
@@ -123,8 +123,7 @@ void printtbtree(t_btree root)
     {
         if (ptr->rightthread == 1) /* 右子节点是否是线索化 */
             ptr = ptr->right;      /* 往右子树走         */
-        else
-        {
+        else {
             ptr = ptr->right;            /* 先到右子节点       */
             while (ptr->leftthread != 1) /* 当左子节点不是线索化 */
                 ptr = ptr->left;         /* 往左子树走         */
@@ -137,8 +136,7 @@ void printtbtree(t_btree root)
 /* ---------------------------------------- */
 /*  主程式: 建立线索化二叉树且列印出来.           */
 /* ---------------------------------------- */
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     t_btree root = NULL; /* 树根指标           */
 
     /* 线索化二叉树节点数据 */
