@@ -2,13 +2,16 @@
 /*    程序实例: 10_7.c                       */
 /*    二叉查找树排序法                        */
 /* ======================================== */
+// 中序遍历二叉搜索树（binary search tree）按升序输出
+
+// gcc -xc ../../utilities/safe_gets.c 10_7.C && ./a.out
+
 #include <stdio.h>
 
 /* ---------------------------------------- */
-/*  建立二叉查找树                            */
+/*  建立二叉查找树（详细创建日志跟踪参考 7_5）     */
 /* ---------------------------------------- */
-void createbtree(int *btree, int *data, int len)
-{
+void createbtree(int *btree, int *data, int len) {
     int level; /* 树的层数           */
     int i;
 
@@ -30,21 +33,25 @@ void createbtree(int *btree, int *data, int len)
 /* ---------------------------------------- */
 /*  二叉树中序遍历                            */
 /* ---------------------------------------- */
-void inorder(int *btree, int pos)
-{
-    if (btree[pos] != 0 && pos < 16) /* 终止条件     */
+void inorder(int *btree, int pos) {
+    if (pos < 16 && btree[pos] != 0) /* 终止条件     */
     {
-        inorder(btree, pos * 2 + 1); /* 左子树            */
+        inorder(btree, pos * 2);     /* 左子树            */
         printf("[%d]", btree[pos]);  /* 输出结点内容       */
-        inorder(btree, pos * 2);     /* 右子树            */
+        inorder(btree, pos * 2 + 1); /* 右子树            */
     }
 }
 
 /* ---------------------------------------- */
 /*  主程序: 使用二叉查找树执行排序               */
 /* ---------------------------------------- */
-int main(int argc, char *argv[])
-{
+/*
+                5(1)
+         4(2)          6(3)
+     2(4)                   8(7)
+ 1(8)    3(9)          7(14)    9(15)
+*/
+int main(int argc, char *argv[]) {
     int btree[16]; /* 二叉树数组        */
     /* 二叉树结点数据 */
     int data[10] = {0, 5, 6, 4, 8, 2, 3, 7, 1, 9};
@@ -58,7 +65,7 @@ int main(int argc, char *argv[])
         printf("[%d]", btree[i]);
     printf("\n输出的排序结果: ");
     inorder(btree, 1); /* 输出排序结果       */
-    printf("\n");      /* 换行              */
+    printf("\n");
 
     return 0;
 }

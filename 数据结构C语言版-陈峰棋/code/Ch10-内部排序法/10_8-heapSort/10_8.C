@@ -7,8 +7,7 @@
 /* ---------------------------------------- */
 /*  建立堆                                   */
 /* ---------------------------------------- */
-void adjust_heap(int *heap, int root, int len)
-{
+void adjust_heap(int *heap, int root, int len) {
     int done; /* 是否可结束的变量     */
     int j;
     int temp;
@@ -23,8 +22,7 @@ void adjust_heap(int *heap, int root, int len)
                 j++;         /* 下一结点             */
         if (temp >= heap[j]) /* 比较树根值           */
             done = 1;        /* 结束                */
-        else
-        {
+        else {
             heap[j / 2] = heap[j]; /* 父结点是目前结点     */
             j = 2 * j;             /* 其子结点            */
         }
@@ -35,8 +33,7 @@ void adjust_heap(int *heap, int root, int len)
 /* ---------------------------------------- */
 /*  堆排序                                   */
 /* ---------------------------------------- */
-void heap(int *heap, int len)
-{
+void heap(int *heap, int len) {
     int i, j, temp;
 
     for (i = (len / 2); i >= 1; i--) /*将二叉树转成堆*/
@@ -44,7 +41,7 @@ void heap(int *heap, int len)
     printf("\n堆中数据: ");
     for (j = 1; j < 10; j++) /* 输出堆的内容       */
         printf("[%d]", heap[j]);
-    printf("\n");                  /* 换行                 */
+    printf("\n");
     for (i = len - 1; i >= 1; i--) /* 堆排序主循环   */
     {
         temp = heap[i + 1]; /* 交换最后元素         */
@@ -60,8 +57,7 @@ void heap(int *heap, int len)
 /* ---------------------------------------- */
 /*  主程序: 将数组数据用堆排序法来排序.           */
 /* ---------------------------------------- */
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     /* 二叉树结点数据 */
     int data[10] = {0, 5, 6, 4, 8, 2, 3, 7, 1, 9};
     int i;
@@ -73,7 +69,7 @@ int main(int argc, char *argv[])
     printf("\n\n输出排序结果: ");
     for (i = 1; i < 10; i++) /* 输出最后内容         */
         printf("[%d]", data[i]);
-    printf("\n"); /* 换行                 */
+    printf("\n");
 
     return 0;
 }
